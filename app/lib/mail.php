@@ -25,7 +25,8 @@ function send_mail(string $to, string $subject, string $text, array $attachments
 {
     $cfg = smtp_config();
     $fromName = (string) (setting('company')['name'] ?? 'Web');
-    $from = $cfg['from'] !== '' ? $cfg['from'] : 'web@localhost';
+    $host = (string) parse_url((string) config('app_url'), PHP_URL_HOST);
+    $from = $cfg['from'] !== '' ? $cfg['from'] : 'web@' . (str_contains($host, '.') ? preg_replace('/^www\./', '', $host) : 'localhost.localdomain');
 
     if (!class_exists(PHPMailer::class)) {
         return mail_to_log($to, $subject, $text, $attachments, 'PHPMailer není nainstalovaný (composer install)');

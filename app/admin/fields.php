@@ -193,7 +193,7 @@ function render_repeater(array $f, array $rows, array $path, array $errors, stri
     $tpl = repeater_item($f, fill_defaults($f['fields'], []), array_merge($path, ['__i__']), [], 0);
     $fixed = $min === $max;
     return $wrapOpen . '<span class="f-label" id="' . $id . '-label">' . $label
-        . ' <span class="rep-count">(' . ($fixed ? 'přesně ' . $min : ($min ? "$min–$max" : "max. $max")) . ')</span></span>'
+        . ' <span class="rep-count">(' . ($fixed ? 'přesně ' . $min : ($min ? "{$min}–{$max}" : "max. $max")) . ')</span></span>'
         . $help . $errHtml
         . '<div class="repeater" id="' . $id . '" data-repeater data-min="' . $min . '" data-max="' . $max . '" role="list" aria-labelledby="' . $id . '-label">' . $items . '</div>'
         . '<template data-rep-template>' . $tpl . '</template>'

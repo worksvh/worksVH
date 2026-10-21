@@ -45,7 +45,6 @@ function image_make_variants(string $path, string $mime, string $baseName): arra
         $exif = @exif_read_data($path);
         $angle = match ((int) ($exif['Orientation'] ?? 1)) { 3 => 180, 6 => -90, 8 => 90, default => 0 };
         if ($angle !== 0 && ($rot = imagerotate($src, $angle, 0))) {
-            imagedestroy($src);
             $src = $rot;
         }
     }
@@ -64,9 +63,7 @@ function image_make_variants(string $path, string $mime, string $baseName): arra
         if (imagewebp($dst, PUBLIC_PATH . '/media/' . $file, 82)) {
             $out[] = [$vw, $vh, $file];
         }
-        imagedestroy($dst);
     }
-    imagedestroy($src);
     usort($out, static fn($a, $b) => $a[0] <=> $b[0]);
     return $out;
 }

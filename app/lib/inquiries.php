@@ -100,7 +100,7 @@ function inquiry_send_mails(int $id): void
     ];
     $text = "Nová poptávka z webu (č. {$q['id']}, " . format_date($q['created_at']) . ")\n\n";
     foreach ($lines as $k => $v) {
-        $text .= str_pad($k . ':', 18) . ($v !== '' ? $v : '–') . "\n";
+        $text .= $k . ':' . str_repeat(' ', max(1, 18 - mb_strlen($k))) . ($v !== '' ? $v : '–') . "\n";
     }
     $text .= "\nPopis:\n{$q['message']}\n\n";
     $total = array_sum(array_column($files, 'size'));

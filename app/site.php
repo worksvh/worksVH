@@ -122,7 +122,7 @@ function site_contact_submit(): void
     // honeypot: robot dostane „úspěch“, nic se neuloží
     if (trim((string) ($_POST['web'] ?? '')) !== '') {
         log_write('spam', 'honeypot ' . ip_hash(client_ip()));
-        redirect('/poptavka-odeslana');
+        redirect('/poptavka-odeslana#obsah');
     }
 
     [$values, $errors] = inq_validate_fields($_POST);
@@ -154,7 +154,7 @@ function site_contact_submit(): void
     } catch (Throwable $e) {
         log_error("Poptávka $id: e-maily selhaly: " . $e->getMessage());
     }
-    redirect('/poptavka-odeslana');
+    redirect('/poptavka-odeslana#obsah');
 }
 
 function site_sitemap(): void
