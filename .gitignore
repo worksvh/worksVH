@@ -1,0 +1,13 @@
+/vendor/
+/.env
+/storage/database.sqlite*
+/storage/app.key
+/storage/inquiries/*
+!/storage/inquiries/.htaccess
+/storage/logs/*
+!/storage/logs/.htaccess
+/storage/backups/*
+!/storage/backups/.htaccess
+/public/media/*
+!/public/media/.htaccess
+.DS_Store

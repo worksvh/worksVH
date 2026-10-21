@@ -1,0 +1,6 @@
+/* Bez JavaScriptu: klikací díl jako seznam */
+.pin, .part-detail, .js-only { display: none !important; }
+.part-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 28px 32px; list-style: none; margin: 0; padding: 0; flex: 1 1 100%; }
+.part-list li { display: flex; flex-direction: column; gap: 10px; }
+.part-list .h2-detail { font-size: clamp(24px, 2vw, 30px); }
+.part-list .part-text { font-size: 16px; }

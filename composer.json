@@ -1,0 +1,21 @@
+{
+    "name": "vhworks/web",
+    "description": "Web a jednoduché CMS pro VH Works",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.2",
+        "ext-pdo_sqlite": "*",
+        "ext-fileinfo": "*",
+        "ext-dom": "*",
+        "phpmailer/phpmailer": "^6.9"
+    },
+    "suggest": {
+        "ext-gd": "Zmenšené WebP varianty obrázků",
+        "ext-zip": "Záloha z administrace"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}
