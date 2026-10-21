@@ -381,7 +381,7 @@ return [
                 'dic' => ['type' => 'text', 'label' => 'DIČ'],
                 'dic_label' => ['type' => 'text', 'label' => 'Popisek před DIČ', 'help' => 'Obvykle „DIČ“.'],
                 'map_image' => ['type' => 'image', 'label' => 'Obrázek mapy', 'help' => 'Statický snímek mapy (žádné vložené mapy kvůli cookies). Dokud chybí, zobrazí se šedé místo s textem z popisu.'],
-                'map_url' => ['type' => 'url', 'label' => 'Odkaz na Mapy.cz', 'help' => 'Kliknutím na mapu se otevře tento odkaz.'],
+                'map_url' => ['type' => 'url', 'label' => 'Odkaz na mapu', 'help' => 'Kliknutím na mapu se otevře tento odkaz (Google Mapy nebo Mapy.cz).'],
                 'map_link' => ['type' => 'text', 'label' => 'Text odkazu na mapu'],
             ],
         ],

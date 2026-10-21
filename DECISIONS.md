@@ -17,7 +17,7 @@ Pořadí priorit podle zadání: (1) SPEC.md, (2) design/, (3) zdravý rozum.
    a nastaví jim `role="button"`; aktivní má `aria-current="true"`. Stav „aktivní“ vypadá jako v návrhu (černé tlačítko).
 6. **Klikací díl bez JS:** piny a detail se schovají a zobrazí se seznam všech 4 položek (`<noscript>` styl, žádné problikávání).
    Pozice pinů z CMS se zapisují do `<style nonce>` v hlavičce, takže CSP nepotřebuje `unsafe-inline`.
-7. **Mapa:** statický obrázek z Médií (Nastavení › Firma a kontakty › Obrázek mapy) s odkazem na Mapy.cz. Dokud obrázek chybí, je tam šedé místo
+7. **Mapa:** statický obrázek z Médií (Nastavení › Firma a kontakty › Obrázek mapy) s odkazem na mapu (výchozí Google Mapy, záznam „Nástrojaři Úvaly“; jde změnit na Mapy.cz). Dokud obrázek chybí, je tam šedé místo
    s textem „[MAPA: …]“ jako v návrhu. Žádný iframe (cookies třetích stran).
 8. **Zástupné fotky:** pole obrázku má `media` a `alt`. Dokud fotka chybí, `alt` obsahuje popis z návrhu („[FOTO: …]“), web ho ukáže v šedém místě
    a admin ho hlásí jako „K doplnění“. Po nahrání fotky se alt přepíše skutečným popisem.

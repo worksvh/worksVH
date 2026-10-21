@@ -121,8 +121,8 @@ return [
             'dic' => '[DIČ]',
             'dic_label' => 'DIČ',
             'map_image' => $img('[MAPA: Pražská 1473, Úvaly]'),
-            'map_url' => 'https://mapy.cz/?q=Pra%C5%BEsk%C3%A1%201473%2C%20%C3%9Avaly',
-            'map_link' => 'Otevřít v Mapy.cz',
+            'map_url' => 'https://www.google.com/maps/search/?api=1&query=N%C3%A1stroja%C5%99i%20%C3%9Avaly%2C%20Pra%C5%BEsk%C3%A1%201473%2C%20250%2082%20%C3%9Avaly',
+            'map_link' => 'Otevřít v Google Mapách',
         ],
         'display' => ['logo' => ['media' => null, 'alt' => 'VH Works – Tooling, Engineering, Precision'], 'hide_placeholders' => false, 'skip_link' => 'Přeskočit na obsah'],
         'menu' => [
