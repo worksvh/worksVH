@@ -173,6 +173,7 @@ return [
             'files_total' => 'Soubory mají dohromady víc než {max}.',
             'files_type' => 'Soubor {soubor} nemá povolený formát. Povolené: {povolene}.',
             'files_upload' => 'Soubor {soubor} se nepodařilo nahrát, zkuste to znovu.',
+            'csrf' => 'Platnost formuláře vypršela. Odešlete ho prosím znovu.',
             'remove' => 'Odebrat',
         ],
     ],

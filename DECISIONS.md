@@ -53,4 +53,33 @@ Pořadí priorit podle zadání: (1) SPEC.md, (2) design/, (3) zdravý rozum.
 
 ## Kontrola milníku 4: každý viditelný text a obrázek jde změnit v adminu
 
-Doplněno po ověření, viz konec souboru.
+Ověřeno 21. 10. 2026: šablony webu (`app/views/`) neobsahují žádný viditelný text mimo hodnoty z CMS
+(automatická kontrola + ruční průchod). Natvrdo zůstává jen lišta náhledu (vidí ji jen přihlášený admin), skryté pole proti spamu
+a kóty v SVG dílu (součást výkresu z návrhu).
+
+**Společné prvky**
+- [x] Logo a jeho alt – Nastavení › Logo a zobrazení
+- [x] Položky menu (text, odkaz, pořadí), tlačítko Poptávka, popis menu pro čtečky – Nastavení › Menu a patička
+- [x] Telefon v hlavičce, patička (firma, adresa, e-mail, IČO), odkaz na zásady – Nastavení › Firma a kontakty, Menu a patička
+- [x] CTA blok (štítek, nadpis, tlačítko, odkaz) – Nastavení › CTA blok + přepsání na každé stránce
+- [x] Odkaz „Přeskočit na obsah“ – Nastavení › Logo a zobrazení
+- [x] SEO titulek, popis, sdílecí obrázek – na každé stránce + výchozí v Nastavení › SEO
+
+**Úvod** – štítky, H1, perex · hlavička panelu (vlevo, vpravo), „POZ.“, 4 piny (nadpis, text, technický řádek, pozice x/y) ·
+nadpis „Z naší dílny“ a odkaz · 3 zakázky (Zakázky › Na úvodní stránce: název, fotka, kategorie) · CTA. [x]
+
+**Služby** – štítek, H1 · popis seznamu, text s telefonem, „POZ.“ · karty ze sbírky Služby (název, slug/kotva, štítek, popis, 2–3 dvojice, pořadí, zobrazit) · CTA. [x]
+
+**Práce** – štítek, H1, perex · vybraná zakázka (štítek, popisky Zadání/Řešení/Výsledek; obsah ze zakázky) ·
+filtr (text „Vše“, kategorie ze sbírky Kategorie, text prázdného filtru) · karty (fotka, název, štítek kategorie, technický řádek) · CTA. [x]
+
+**Dílna** – štítek, H1, příběh · velká fotka · strojní park (nadpis, stav k datu, 4 záhlaví, řádky ze sbírky Stroje) ·
+lidé (nadpis, text, karty ze sbírky Lidé) · návštěva (nadpis, adresa a provozní doba z Nastavení, parkování, tlačítko, mapa). [x]
+
+**Kontakt** – štítek, H1, velký telefon, 4 popisky údajů a údaje z Nastavení, mapa · formulář (hlavičky panelu, nadpis,
+7 popisků polí, texty přílohy a limitů, souhlas a odkaz, poznámka, tlačítko, hláška chyby) · hlášky validace (Nastavení › Hlášky formuláře). [x]
+
+**Poptávka odeslána** – štítek, H1, text (rich text), text nad telefonem, odkaz zpět. [x]
+**Ochrana osobních údajů** – štítek, H1, text (rich text). [x]
+**404** – štítek, nadpis, text, 2 odkazy (Nastavení › Stránka 404). [x]
+**E-maily** – předměty a text potvrzení zákazníkovi (Nastavení › E-mail a SMTP). [x]

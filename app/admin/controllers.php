@@ -233,6 +233,9 @@ function admin_entity_save(array $ent, array $data, array $extra): string
 function admin_entity_edit(array $ent): never
 {
     $errors = [];
+    $ent['data_orig'] = $ent['data'];
+    $ent['slug_orig'] = $ent['slug'] ?? null;
+    $ent['visible_orig'] = $ent['visible'] ?? true;
     if (is_post()) {
         [$data, $errors, $extra] = admin_entity_parse($ent);
         if ($extra['slug'] ?? null) {
@@ -242,6 +245,12 @@ function admin_entity_edit(array $ent): never
             $ent['visible'] = $extra['visible'];
         }
         if (!$errors) {
+            // první úprava: původní (výchozí) obsah uložit do historie, ať jde vrátit
+            if ($ent['rev'] && !revisions_for(...$ent['rev'])) {
+                revision_add($ent['rev'][0], $ent['rev'][1], $ent['type'] === 'item'
+                    ? ['data' => $ent['data_orig'], 'slug' => $ent['slug_orig'], 'visible' => $ent['visible_orig']]
+                    : $ent['data_orig']);
+            }
             $url = admin_entity_save($ent, $data, $extra);
             flash('ok', 'Uloženo.');
             redirect($url);

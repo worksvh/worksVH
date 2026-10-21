@@ -116,7 +116,7 @@ function site_contact_submit(): void
         return;
     }
     if (!csrf_valid()) {
-        site_page('contact', '/kontakt', ['values' => $_POST, 'errors' => [], 'formError' => 'Platnost formuláře vypršela. Odešlete ho prosím znovu.'], 422);
+        site_page('contact', '/kontakt', ['values' => $_POST, 'errors' => [], 'formError' => inq_msg('csrf')], 422);
         return;
     }
     // honeypot: robot dostane „úspěch“, nic se neuloží

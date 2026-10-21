@@ -475,6 +475,7 @@ return [
                 'files_total' => ['type' => 'text', 'label' => 'Soubory dohromady moc velké', 'required' => true, 'help' => '{max}'],
                 'files_type' => ['type' => 'text', 'label' => 'Nepovolený typ souboru', 'required' => true, 'help' => '{soubor}, {povolene}'],
                 'files_upload' => ['type' => 'text', 'label' => 'Soubor se nepodařilo nahrát', 'required' => true, 'help' => '{soubor}'],
+                'csrf' => ['type' => 'text', 'label' => 'Vypršela platnost formuláře', 'required' => true],
                 'remove' => ['type' => 'text', 'label' => 'Text „Odebrat“ u souboru', 'required' => true],
             ],
         ],
