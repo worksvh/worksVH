@@ -2,30 +2,29 @@
 /** @var array $cta  @var bool $large */
 $large = $large ?? false;
 $phone = setting('company')['phone'];
+
+// štítek „PDF · STEP · DWG · NEBO FOTKA NÁČRTU“ → „PDF, STEP, DWG nebo fotka náčrtu“
+$formats = '';
+$segs = array_values(array_filter(preg_split('/\s*·\s*/u', ph($cta['label'])), static fn($s) => $s !== ''));
+foreach ($segs as $i => $seg) {
+    if (preg_match('/^(nebo|or)\s+(.+)$/iu', $seg, $m)) {
+        $formats .= ' ' . mb_strtolower($m[1]) . ' ' . mb_strtolower($m[2]);
+    } else {
+        $formats .= ($i > 0 ? ', ' : '') . (mb_strlen($seg) <= 5 ? $seg : mb_strtolower($seg));
+    }
+}
 ?>
 <section id="kontakt" class="wrap cta-section<?= $large ? ' cta-section--large' : '' ?>">
   <div class="cta<?= $large ? ' cta--large' : '' ?>">
     <div class="cta-text">
-      <?php if (ph($cta['label']) !== ''): ?>
-        <?php /* štítek „PDF · STEP · DWG · NEBO FOTKA NÁČRTU“ → čipy; část začínající „nebo“ je zvýrazněná alternativa */ ?>
-        <p class="cta-formats">
-          <?php foreach (preg_split('/\s*·\s*/u', ph($cta['label'])) as $seg): if ($seg === '') continue; ?>
-            <?php if (preg_match('/^(nebo|or)\s+(.+)$/iu', $seg, $m)): $alt = mb_strtoupper(mb_substr($m[2], 0, 1)) . mb_strtolower(mb_substr($m[2], 1)); ?>
-              <span class="cta-alt"><span class="cta-or"><?= e(mb_strtolower($m[1])) ?></span>
-              <span class="cta-chip cta-chip--alt"><svg aria-hidden="true" viewBox="0 0 16 16" width="14" height="14"><path d="M2.5 5.5h2l1-1.5h5l1 1.5h2v7h-11z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="8" cy="8.8" r="2.2" fill="none" stroke="currentColor" stroke-width="1.4"/></svg><?= e($alt) ?></span></span>
-            <?php elseif (mb_strlen($seg) <= 5): ?>
-              <span class="cta-chip"><?= e($seg) ?></span>
-            <?php else: ?>
-              <span class="cta-chip cta-chip--text"><?= e($seg) ?></span>
-            <?php endif ?>
-          <?php endforeach ?>
-        </p>
-      <?php endif ?>
       <h2><?= t($cta['title']) ?></h2>
+      <p class="cta-call"><?php if (ph($cta['phone_label']) !== ''): ?><?= t($cta['phone_label']) ?> <?php endif ?><a class="cta-phone" href="<?= e(tel_href($phone)) ?>"><?= e($phone) ?></a></p>
     </div>
-    <div class="cta-actions">
-      <a class="btn btn-dark btn-lg" href="<?= e($cta['button_url']) ?>"><?= t($cta['button']) ?></a>
-      <a class="cta-phone" href="<?= e(tel_href($phone)) ?>"><?= e($phone) ?></a>
-    </div>
+    <a class="cta-drop" href="<?= e($cta['button_url']) ?>">
+      <span class="cta-drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 15V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v4.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <?php if (ph($cta['drop_title']) !== ''): ?><span class="cta-drop-title"><?= t($cta['drop_title']) ?></span><?php endif ?>
+      <?php if ($formats !== ''): ?><span class="cta-drop-formats"><?= e(trim($formats)) ?></span><?php endif ?>
+      <span class="btn cta-drop-btn"><?= t($cta['button']) ?> <span aria-hidden="true">→</span></span>
+    </a>
   </div>
 </section>

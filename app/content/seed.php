@@ -168,6 +168,8 @@ return [
         'cta' => [
             'label' => 'PDF · STEP · DWG · NEBO FOTKA NÁČRTU',
             'title' => 'Pošlete výkres, ozveme se s cenou.',
+            'phone_label' => 'Raději voláte?',
+            'drop_title' => 'Přiložte výkres, model nebo fotku',
             'button' => 'Poslat poptávku',
             'button_url' => '/kontakt',
         ],

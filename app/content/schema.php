@@ -26,7 +26,7 @@ $cta = [
     'anchor' => 'kontakt',
     'help' => 'Prázdná pole převezmou výchozí texty z Nastavení › CTA blok.',
     'fields' => [
-        'label' => ['type' => 'text', 'label' => 'Štítek nad nadpisem'],
+        'label' => ['type' => 'text', 'label' => 'Formáty souborů (karta vpravo)'],
         'title' => ['type' => 'text', 'label' => 'Nadpis'],
         'button' => ['type' => 'text', 'label' => 'Text tlačítka'],
     ],
@@ -436,8 +436,10 @@ return [
             'label' => 'CTA blok',
             'help' => 'Výchozí texty modrého bloku. Každá stránka je může přepsat vlastními.',
             'fields' => [
-                'label' => ['type' => 'text', 'label' => 'Štítek nad nadpisem'],
+                'label' => ['type' => 'text', 'label' => 'Formáty souborů', 'help' => 'Malý text v kartě vpravo. Oddělujte tečkou „·“, např. „PDF · STEP · DWG · NEBO FOTKA NÁČRTU“ (zobrazí se jako „PDF, STEP, DWG nebo fotka náčrtu“).'],
                 'title' => ['type' => 'text', 'label' => 'Nadpis', 'required' => true],
+                'phone_label' => ['type' => 'text', 'label' => 'Text před telefonem', 'default' => 'Raději voláte?'],
+                'drop_title' => ['type' => 'text', 'label' => 'Nadpis karty vpravo', 'default' => 'Přiložte výkres, model nebo fotku'],
                 'button' => ['type' => 'text', 'label' => 'Text tlačítka', 'required' => true],
                 'button_url' => ['type' => 'url', 'label' => 'Odkaz tlačítka', 'required' => true],
             ],

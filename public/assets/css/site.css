@@ -172,21 +172,22 @@ main:focus { outline: none; }
 /* CTA */
 .cta-section { padding-bottom: clamp(56px, 7vw, 88px); }
 .cta-section--large { padding-top: clamp(56px, 7vw, 88px); }
-.cta { background: var(--blue); color: var(--white); border-radius: 24px; padding: clamp(28px, 4vw, 48px); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 24px; }
-.cta--large { padding: clamp(28px, 5vw, 64px); gap: 32px; }
-.cta-text { display: flex; flex-direction: column; gap: 14px; }
+.cta { background: var(--blue); color: var(--white); border-radius: 24px; padding: clamp(24px, 4vw, 48px); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 28px 40px; }
+.cta--large { padding: clamp(24px, 5vw, 64px); }
+.cta-text { flex: 1 1 420px; display: flex; flex-direction: column; gap: 18px; }
 .cta h2 { color: var(--white); font-size: clamp(30px, 3.4vw, 48px); line-height: 1.02; letter-spacing: -0.035em; max-width: 18ch; text-wrap: balance; }
 .cta--large h2 { font-size: clamp(36px, 4.8vw, 72px); line-height: 1; letter-spacing: -0.04em; max-width: 14ch; }
-.cta-formats { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; }
-.cta-chip { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 13px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.32); background: rgba(255, 255, 255, 0.1); color: var(--white); font-family: var(--f-head); font-weight: 600; font-size: 12px; letter-spacing: 0.1em; line-height: 1; }
-.cta-chip--text { letter-spacing: 0.04em; }
-.cta-chip--alt { background: var(--white); border-color: var(--white); color: var(--blue); letter-spacing: 0.01em; font-size: 13px; }
-.cta-or { color: rgba(255, 255, 255, 0.8); font-size: 14px; padding: 0 2px; }
-.cta-alt { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
-.cta--large .cta-formats { margin-bottom: 6px; }
-.cta-actions { display: flex; flex-direction: column; gap: 14px; align-items: center; text-align: center; }
-.cta-phone { font-size: 18px; font-weight: 600; color: var(--white); }
+.cta-call { margin: 0; font-size: 17px; color: rgba(255, 255, 255, 0.82); }
+.cta-phone { font-weight: 600; color: var(--white); white-space: nowrap; text-decoration-thickness: 1px; text-underline-offset: 4px; }
 .cta-phone:hover { color: var(--white); text-decoration-thickness: 2px; }
+.cta-drop { flex: 0 1 400px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 26px; border-radius: 20px; border: 1.5px dashed rgba(255, 255, 255, 0.5); background: rgba(255, 255, 255, 0.08); color: var(--white); text-decoration: none; transition: background 0.15s, border-color 0.15s; }
+.cta-drop:hover { background: rgba(255, 255, 255, 0.14); border-color: var(--white); color: var(--white); }
+.cta-drop-icon { display: grid; place-items: center; width: 44px; height: 44px; margin-bottom: 6px; border-radius: 50%; background: var(--white); color: var(--blue); }
+.cta-drop-title { font-family: var(--f-head); font-weight: 600; font-size: 20px; line-height: 1.2; }
+.cta-drop-formats { font-size: 14px; color: rgba(255, 255, 255, 0.78); }
+.cta-drop-btn { align-self: stretch; margin-top: 12px; background: var(--white); color: var(--blue); gap: 8px; }
+.cta-drop:hover .cta-drop-btn { background: var(--ink); color: var(--white); }
+@media (max-width: 640px) { .cta-drop { flex-basis: 100%; padding: 22px; } }
 .cta a:focus-visible { outline-color: var(--white); }
 
 /* STRÁNKY: společný hero */
