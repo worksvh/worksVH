@@ -41,6 +41,8 @@ function send_security_headers(bool $admin = false): void
     header('Referrer-Policy: strict-origin-when-cross-origin');
     header('Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()');
     header('X-Frame-Options: DENY');
+    // stránka nese jednorázový nonce a obsah z CMS → prohlížeč ji musí pokaždé ověřit u serveru
+    header('Cache-Control: no-cache');
     if (is_production() && is_https()) {
         header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
     }
