@@ -223,7 +223,7 @@ return [
             ['data' => ['title' => '[Série dílů]', 'category' => 'cat:cnc', 'photo' => $img('[FOTO: série kusů v řadě]'), 'spec' => '[MATERIÁL] · [KS] · [ODVĚTVÍ]', 'year' => '', 'brief' => '', 'solution' => '', 'result' => '', 'featured' => false, 'on_home' => false]],
         ],
         'machines' => [
-            ['data' => ['name' => '2× obráběcí centrum', 'type' => 'CNC frézování', 'range' => 'zásobník na 24 nástrojů · Heidenhain · [X × Y × Z mm]', 'use' => 'přesné díly, díly přípravků a strojů']],
+            ['data' => ['name' => '2× MAS MCV 754 Quick', 'type' => 'Obráběcí centrum · CNC frézování', 'range' => 'zásobník na 24 nástrojů · Heidenhain · [X × Y × Z mm]', 'use' => 'přesné díly, díly přípravků a strojů']],
             ['data' => ['name' => 'CNC soustruh', 'type' => 'CNC soustružení', 'range' => 'točný Ø [XXX] mm · průchod vřetenem Ø [XXX] mm', 'use' => 'rotační díly']],
             ['data' => ['name' => 'RNGJ 32', 'type' => 'Nástrojařská frézka', 'range' => '[ROZSAH]', 'use' => 'nástrojařské práce, úpravy dílů']],
             ['data' => ['name' => 'BPH 20', 'type' => 'Bruska na plocho', 'range' => '[ROZSAH]', 'use' => 'přesné rovinné plochy']],
