@@ -30,6 +30,20 @@ Na hostingu se limity nastaví samy přes `public/.htaccess` (mod_php) nebo `pub
 **E-maily lokálně:** když v `.env` (ani v Nastavení › E-mail a SMTP) není `SMTP_HOST`, e-maily se neodesílají,
 ale celé se uloží do `storage/logs/mail/*.eml`.
 
+## Databáze: Turso (libSQL)
+
+Data webu (obsah, uživatelé, poptávky, historie) jsou v Turso, když je v `.env` vyplněné `TURSO_URL` a `TURSO_TOKEN`.
+Bez nich web použije lokální SQLite `storage/database.sqlite` (např. pro práci offline).
+
+- Připojení jde přes HTTP API Turso (`/v2/pipeline`), na hostingu stačí rozšíření PHP `curl`.
+- Obsah webu (stránky, nastavení, sbírky, média) se čte z lokální kopie `storage/cache/mirror.sqlite`, takže stránky
+  nečekají na síť. Kopie se stáhne jedním požadavkem, obnoví se hned po každém uložení v adminu a jinak
+  nejpozději po `TURSO_MIRROR_TTL` sekundách (výchozí 300).
+- Zápisy (uložení, poptávky, přihlášení) jdou vždy přímo do Turso; uložení stránky a její historie je jeden požadavek.
+- Přenos dat z lokální SQLite do Turso: `php app/cli.php import-sqlite [soubor]` (data v Turso přepíše).
+- Záloha (Nastavení › Záloha, `php app/cli.php backup`) stáhne celou databázi z Turso do souboru SQLite v ZIPu.
+- Obrázky a přílohy poptávek zůstávají na disku serveru (`public/media/`, `storage/inquiries/`), Turso je neobsahuje.
+
 ## Struktura
 
 ```
@@ -49,7 +63,7 @@ Formulář v administraci se vygeneruje sám. Existující obsah v DB se nepřep
 
 ## Nasazení na sdílený hosting (Wedos, Forpsi, Active24)
 
-Požadavky: PHP 8.2+, rozšíření `pdo_sqlite`, `fileinfo`, `dom`, `mbstring`; doporučeno `gd` (WebP varianty obrázků) a `zip` (zálohy).
+Požadavky: PHP 8.2+, rozšíření `pdo_sqlite`, `curl` (Turso), `fileinfo`, `dom`, `mbstring`; doporučeno `gd` (WebP varianty obrázků) a `zip` (zálohy).
 
 1. Lokálně spusťte `composer install --no-dev` (vznikne složka `vendor/`).
 2. Přes FTP/SFTP nahrajte celý projekt **kromě** `storage/database.sqlite`, `.env` a `public/media/*` (ty vzniknou na serveru).

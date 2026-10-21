@@ -1,9 +1,21 @@
 <?php
 declare(strict_types=1);
 
-function db(): PDO
+require_once __DIR__ . '/lib/turso.php';
+
+function db_is_turso(): bool
+{
+    return (string) config('turso')['url'] !== '';
+}
+
+/** PDO pro lokální SQLite, nebo TursoDb se stejným rozhraním. */
+function db(): PDO|TursoDb
 {
     static $pdo = null;
+    if ($pdo === null && db_is_turso()) {
+        $t = config('turso');
+        $pdo = new TursoDb($t['url'], $t['token'], $t['mirror'], max(5, $t['ttl']));
+    }
     if ($pdo === null) {
         $pdo = new PDO('sqlite:' . config('db_path'), null, null, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -18,6 +30,14 @@ function db(): PDO
 function db_ready(): bool
 {
     static $ready = null;
+    if ($ready === null && db_is_turso()) {
+        try {
+            $ready = (bool) db()->query("SELECT 1 FROM pages LIMIT 1")->fetchColumn();
+        } catch (Throwable $e) {
+            log_error('Databáze Turso: ' . $e->getMessage());
+            $ready = false;
+        }
+    }
     if ($ready === null) {
         $ready = is_file(config('db_path'))
             && (bool) db()->query("SELECT 1 FROM sqlite_master WHERE type='table' AND name='pages'")->fetchColumn();
@@ -53,6 +73,29 @@ function db_exec(string $sql, array $params = []): int
     $st = db()->prepare($sql);
     $st->execute($params);
     return $st->rowCount();
+}
+
+/** Několik zápisů najednou: v Turso jedním požadavkem, v SQLite v transakci. $stmts = [[sql, params], …] */
+function db_batch(array $stmts): void
+{
+    if ($stmts === []) {
+        return;
+    }
+    $db = db();
+    if ($db instanceof TursoDb) {
+        $db->batch($stmts);
+        return;
+    }
+    $db->beginTransaction();
+    try {
+        foreach ($stmts as [$sql, $params]) {
+            db_exec($sql, $params);
+        }
+        $db->commit();
+    } catch (Throwable $e) {
+        $db->rollBack();
+        throw $e;
+    }
 }
 
 function now(): string

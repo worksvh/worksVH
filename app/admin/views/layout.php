@@ -1,7 +1,7 @@
 <?php
 /** @var string $content @var string $title @var string $nav */
 $u = current_user();
-$newCount = (int) db_val("SELECT COUNT(*) FROM inquiries WHERE status = 'new'");
+$newCount = inquiries_new_count();
 $link = static function (string $href, string $label, bool $on, string $extra = ''): string {
     return '<a href="' . e($href) . '"' . ($on ? ' aria-current="page" class="is-active"' : '') . '>' . e($label) . $extra . '</a>';
 };

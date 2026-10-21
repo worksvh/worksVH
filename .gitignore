@@ -11,3 +11,5 @@
 /public/media/*
 !/public/media/.htaccess
 .DS_Store
+/storage/cache/*
+!/storage/cache/.htaccess

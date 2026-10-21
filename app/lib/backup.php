@@ -13,7 +13,11 @@ function backup_create(string $targetDir): string
     $stamp = date('Y-m-d-His');
     $dbCopy = "$targetDir/db-$stamp.sqlite";
     // konzistentní kopie i za běhu
-    db()->exec('VACUUM INTO ' . db()->quote($dbCopy));
+    if (db_is_turso()) {
+        db()->exportTo($dbCopy);
+    } else {
+        db()->exec('VACUUM INTO ' . db()->quote($dbCopy));
+    }
     $zipPath = "$targetDir/vhworks-zaloha-$stamp.zip";
     $zip = new ZipArchive();
     if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {

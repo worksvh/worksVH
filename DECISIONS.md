@@ -53,6 +53,12 @@ Pořadí priorit podle zadání: (1) SPEC.md, (2) design/, (3) zdravý rozum.
     CSS webu 22 kB, JS 7,5 kB. Na Apache se navíc zapne komprese (`mod_deflate` v `.htaccess`).
     Ruční test klávesnicí: skip link, logické pořadí, modrý obrys 2 px u všech prvků, piny a štítky dílu ovladatelné šipkami.
 
+25. **Databáze Turso místo souboru SQLite** (pokyn klienta, 21. 10. 2026). Turso je SQLite kompatibilní, takže schéma
+    a dotazy zůstaly. Napojení přes HTTP API bez rozšíření PHP (sdílený hosting). Protože každý dotaz je cesta po síti
+    (z Prahy do eu-west-1 asi 0,3 s), veřejný web čte obsah z lokální kopie (`storage/cache/mirror.sqlite`) a admin ukládá
+    stránku i historii jedním požadavkem. Přihlášený uživatel se ověřuje v DB nejvýš jednou za minutu, počet nových poptávek
+    za 30 s. Lokální SQLite zůstává jako záložní režim (prázdné `TURSO_URL`).
+
 ## Návrhy (neimplementováno)
 
 - Po dodání fotek zvážit `<link rel="preload">` pro první fotku stránky (LCP).

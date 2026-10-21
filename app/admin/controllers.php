@@ -127,7 +127,7 @@ function admin_dashboard(): never
     admin_view('dashboard', [
         'title' => 'Přehled',
         'nav' => 'dashboard',
-        'newCount' => (int) db_val("SELECT COUNT(*) FROM inquiries WHERE status = 'new'"),
+        'newCount' => inquiries_new_count(true),
         'latest' => db_all("SELECT * FROM inquiries ORDER BY id DESC LIMIT 5"),
         'todo' => placeholder_report(),
         'hidden' => (bool) setting('display')['hide_placeholders'],
@@ -474,6 +474,7 @@ function admin_inquiry(int $id): never
         $st = (string) ($_POST['status'] ?? $q['status']);
         db_exec('UPDATE inquiries SET status = ?, note = ? WHERE id = ?',
             [isset(INQUIRY_STATUSES[$st]) ? $st : $q['status'], mb_substr(trim((string) ($_POST['note'] ?? '')), 0, 10000), $id]);
+        unset($_SESSION['new_count']);
         flash('ok', 'Uloženo.');
         redirect("/admin/poptavky/$id");
     }

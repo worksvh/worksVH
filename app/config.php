@@ -30,6 +30,13 @@ return [
     'app_url'    => rtrim($get('APP_URL', 'http://localhost:8000'), '/'),
     'app_env'    => $get('APP_ENV', 'development'),
     'db_path'    => BASE_PATH . '/storage/database.sqlite',
+    // Turso (libSQL): když je TURSO_URL vyplněné, data jsou v Turso, jinak v lokálním souboru db_path
+    'turso' => [
+        'url' => $get('TURSO_URL'),
+        'token' => $get('TURSO_TOKEN'),
+        'mirror' => BASE_PATH . '/storage/cache/mirror.sqlite',
+        'ttl' => (int) $get('TURSO_MIRROR_TTL', '300'),
+    ],
     'smtp' => [
         'host' => $get('SMTP_HOST'),
         'port' => (int) $get('SMTP_PORT', '587'),

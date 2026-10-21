@@ -345,11 +345,19 @@ const REVISIONS_KEEP = 10;
 
 function revision_add(string $type, string $key, array $data): void
 {
-    db_exec('INSERT INTO revisions (entity_type, entity_key, data, created_at, user_id) VALUES (?, ?, ?, ?, ?)',
-        [$type, $key, json_encode($data, JSON_UNESCAPED_UNICODE), now(), current_user()['id'] ?? null]);
-    db_exec('DELETE FROM revisions WHERE entity_type = ? AND entity_key = ? AND id NOT IN (
-        SELECT id FROM revisions WHERE entity_type = ? AND entity_key = ? ORDER BY id DESC LIMIT ' . REVISIONS_KEEP . ')',
-        [$type, $key, $type, $key]);
+    db_batch(revision_stmts($type, $key, $data));
+}
+
+/** Příkazy pro zápis verze do historie (pro db_batch spolu s uložením). */
+function revision_stmts(string $type, string $key, array $data): array
+{
+    return [
+        ['INSERT INTO revisions (entity_type, entity_key, data, created_at, user_id) VALUES (?, ?, ?, ?, ?)',
+            [$type, $key, json_encode($data, JSON_UNESCAPED_UNICODE), now(), current_user()['id'] ?? null]],
+        ['DELETE FROM revisions WHERE entity_type = ? AND entity_key = ? AND id NOT IN (
+            SELECT id FROM revisions WHERE entity_type = ? AND entity_key = ? ORDER BY id DESC LIMIT ' . REVISIONS_KEEP . ')',
+            [$type, $key, $type, $key]],
+    ];
 }
 
 function revisions_for(string $type, string $key): array
@@ -361,18 +369,16 @@ function revisions_for(string $type, string $key): array
 function page_save(string $key, array $data): void
 {
     $json = json_encode($data, JSON_UNESCAPED_UNICODE);
-    db_exec('INSERT INTO pages (key, data, updated_at, updated_by) VALUES (?, ?, ?, ?)
+    db_batch(array_merge([['INSERT INTO pages (key, data, updated_at, updated_by) VALUES (?, ?, ?, ?)
         ON CONFLICT(key) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at, updated_by = excluded.updated_by',
-        [$key, $json, now(), current_user()['id'] ?? null]);
-    revision_add('page', $key, $data);
+        [$key, $json, now(), current_user()['id'] ?? null]]], revision_stmts('page', $key, $data)));
 }
 
 function setting_save(string $key, array $data): void
 {
-    db_exec('INSERT INTO settings (key, data, updated_at) VALUES (?, ?, ?)
+    db_batch(array_merge([['INSERT INTO settings (key, data, updated_at) VALUES (?, ?, ?)
         ON CONFLICT(key) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at',
-        [$key, json_encode($data, JSON_UNESCAPED_UNICODE), now()]);
-    revision_add('settings', $key, $data);
+        [$key, json_encode($data, JSON_UNESCAPED_UNICODE), now()]]], revision_stmts('settings', $key, $data)));
 }
 
 /** Jedinečný slug v rámci sbírky. */
@@ -395,11 +401,12 @@ function item_save(string $collection, ?int $id, array $data, ?string $slug, boo
         db_exec('INSERT INTO items (collection, slug, data, sort, visible, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
             [$collection, $slug, $json, $sort, (int) $visible, now(), now()]);
         $id = (int) db()->lastInsertId();
+        revision_add('item', (string) $id, ['data' => $data, 'slug' => $slug, 'visible' => $visible]);
     } else {
-        db_exec('UPDATE items SET slug = ?, data = ?, visible = ?, updated_at = ? WHERE id = ? AND collection = ?',
-            [$slug, $json, (int) $visible, now(), $id, $collection]);
+        db_batch(array_merge([['UPDATE items SET slug = ?, data = ?, visible = ?, updated_at = ? WHERE id = ? AND collection = ?',
+            [$slug, $json, (int) $visible, now(), $id, $collection]]],
+            revision_stmts('item', (string) $id, ['data' => $data, 'slug' => $slug, 'visible' => $visible])));
     }
-    revision_add('item', (string) $id, ['data' => $data, 'slug' => $slug, 'visible' => $visible]);
     return $id;
 }
 

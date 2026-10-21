@@ -69,6 +69,18 @@ function inquiry_delete_files(int $id): void
 }
 
 /** Anonymizuje poptávky starší než lhůta z Nastavení a smaže jejich přílohy. Vrací počet. */
+/** Počet nových poptávek pro odznak v menu adminu; v relaci se drží 30 s (každý dotaz do Turso stojí čas). */
+function inquiries_new_count(bool $fresh = false): int
+{
+    $c = $_SESSION['new_count'] ?? null;
+    if (!$fresh && is_array($c) && time() - $c[1] < 30) {
+        return $c[0];
+    }
+    $n = (int) db_val("SELECT COUNT(*) FROM inquiries WHERE status = 'new'");
+    $_SESSION['new_count'] = [$n, time()];
+    return $n;
+}
+
 function inquiries_anonymize_old(): int
 {
     $months = max(1, (int) (setting('mail')['retention_months'] ?? 24));

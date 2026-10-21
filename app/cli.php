@@ -7,6 +7,7 @@ declare(strict_types=1);
  *   php app/cli.php create-admin e-mail  – vytvoří správce (heslo se zadá interaktivně)
  *   php app/cli.php backup               – záloha do storage/backups (posledních 14)
  *   php app/cli.php anonymize            – anonymizace starých poptávek (pro cron)
+ *   php app/cli.php import-sqlite [soubor] – přenese data z lokální SQLite do Turso (přepíše je)
  */
 
 if (PHP_SAPI !== 'cli') {
@@ -46,6 +47,43 @@ switch ($cmd) {
         $seeded = seed_database();
         out($seeded ? 'Výchozí obsah: ' . implode(', ', $seeded) : 'Výchozí obsah: vše už existuje.');
         app_key();
+        break;
+
+    case 'import-sqlite':
+        if (!db_is_turso()) {
+            fail('Nejdřív vyplňte TURSO_URL a TURSO_TOKEN v .env.');
+        }
+        $file = $argv[2] ?? config('db_path');
+        if (!is_file($file)) {
+            fail("Soubor $file neexistuje.");
+        }
+        $applied = db_migrate();
+        out($applied ? 'Migrace v Turso: ' . implode(', ', $applied) : 'Migrace v Turso: nic nového.');
+        $src = new PDO('sqlite:' . $file, null, null, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]);
+        $tables = $src->query("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name <> 'migrations'")->fetchAll(PDO::FETCH_COLUMN);
+        // pořadí kvůli cizím klíčům: nejdřív rodiče
+        usort($tables, static fn($a, $b) => (int) in_array($a, ['sessions', 'inquiry_files', 'password_resets'], true) <=> (int) in_array($b, ['sessions', 'inquiry_files', 'password_resets'], true));
+        $reqs = [['type' => 'execute', 'stmt' => ['sql' => 'PRAGMA foreign_keys = OFF']]];
+        foreach (array_reverse($tables) as $t) {
+            $reqs[] = ['type' => 'execute', 'stmt' => ['sql' => "DELETE FROM \"$t\""]];
+        }
+        $count = 0;
+        foreach ($tables as $t) {
+            foreach ($src->query("SELECT * FROM \"$t\"") as $row) {
+                $cols = array_keys($row);
+                $reqs[] = ['type' => 'execute', 'stmt' => [
+                    'sql' => "INSERT INTO \"$t\" (\"" . implode('","', $cols) . '") VALUES (' . implode(',', array_fill(0, count($cols), '?')) . ')',
+                    'args' => array_map([TursoClient::class, 'arg'], array_values($row)),
+                ]];
+                $count++;
+            }
+        }
+        // vše v jedné transakci: buď se přenese celé, nebo nic
+        $client = new TursoClient(config('turso')['url'], config('turso')['token']);
+        $client->pipeline(array_merge([$reqs[0], ['type' => 'execute', 'stmt' => ['sql' => 'BEGIN']]], array_slice($reqs, 1), [['type' => 'execute', 'stmt' => ['sql' => 'COMMIT']]]));
+        db()->refreshMirror();
+        @unlink(config('turso')['mirror'] . '.stale');
+        out("Přeneseno $count řádků z " . count($tables) . " tabulek do Turso.");
         break;
 
     case 'create-admin':

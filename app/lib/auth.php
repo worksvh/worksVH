@@ -13,7 +13,15 @@ function current_user(): ?array
     if (session_status() !== PHP_SESSION_ACTIVE || empty($_SESSION['uid'])) {
         return $user = null;
     }
-    return $user = db_one('SELECT id, email, name, last_login_at FROM users WHERE id = ?', [(int) $_SESSION['uid']]);
+    // uživatel se drží v relaci a z databáze se ověří nejvýš jednou za minutu (smazaný účet ztratí přístup do minuty)
+    $cached = $_SESSION['user_cache'] ?? null;
+    if (is_array($cached) && ($cached['id'] ?? 0) === (int) $_SESSION['uid'] && time() - (int) ($_SESSION['user_checked'] ?? 0) < 60) {
+        return $user = $cached;
+    }
+    $user = db_one('SELECT id, email, name, last_login_at FROM users WHERE id = ?', [(int) $_SESSION['uid']]);
+    $_SESSION['user_cache'] = $user;
+    $_SESSION['user_checked'] = time();
+    return $user;
 }
 
 function login_blocked(string $ip): bool
