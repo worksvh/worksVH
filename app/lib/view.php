@@ -33,8 +33,8 @@ function csp_nonce(): string
 function send_security_headers(bool $admin = false): void
 {
     $nonce = csp_nonce();
-    $csp = "default-src 'self'; script-src 'self'; style-src 'self' 'nonce-$nonce' https://fonts.googleapis.com; "
-        . "font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; form-action 'self'; "
+    $csp = "default-src 'self'; script-src 'self'; style-src 'self' 'nonce-$nonce'; "
+        . "font-src 'self'; img-src 'self' data: blob:; connect-src 'self'; form-action 'self'; "
         . "frame-ancestors 'none'; base-uri 'self'; object-src 'none'";
     header('Content-Security-Policy: ' . $csp);
     header('X-Content-Type-Options: nosniff');

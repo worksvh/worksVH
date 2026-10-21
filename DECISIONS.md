@@ -45,11 +45,18 @@ Pořadí priorit podle zadání: (1) SPEC.md, (2) design/, (3) zdravý rozum.
 21. **Smazání položky** se zapíše do historie (poslední verze dat), takže jde v nouzi dohledat v DB.
 22. **Kategorii** používanou zakázkami nejde smazat (zakázka by ztratila kategorii).
 
+23. **Písma hostovaná lokálně.** Zadání chce Exo 2 a Montserrat z Google Fonts s `display=swap` a `preconnect`. Jde o stejná písma
+    z Google Fonts (licence OFL), jen soubory leží v `public/assets/fonts/` a místo `preconnect` se přednačítají (`preload`).
+    Důvod: CSS z fonts.googleapis.com blokovalo vykreslení o 1–3 s a výměna písma posouvala rozvržení (Lighthouse mobil: výkon 77–89, CLS 0,197).
+    Po změně výkon 98 a CLS 0 na všech stránkách. Vedlejší přínos: prohlížeč návštěvníka neposílá IP adresu Googlu (GDPR) a CSP nepotřebuje cizí domény.
+24. **Lighthouse (mobil, lokálně přes `php -S`, 21. 10. 2026):** všech 5 stránek výkon 98, přístupnost 100, best practices 100, SEO 100, CLS 0.
+    CSS webu 22 kB, JS 7,5 kB. Na Apache se navíc zapne komprese (`mod_deflate` v `.htaccess`).
+    Ruční test klávesnicí: skip link, logické pořadí, modrý obrys 2 px u všech prvků, piny a štítky dílu ovladatelné šipkami.
+
 ## Návrhy (neimplementováno)
 
 - Po dodání fotek zvážit `<link rel="preload">` pro první fotku stránky (LCP).
 - Až bude známý obor zákazníků, doplnit do zakázek pole „Odvětví“ jako samostatnou hodnotu (teď je součástí technického řádku).
-- Pro rychlejší první načtení lze Google Fonts hostovat lokálně (odpadne spojení na fonts.gstatic.com).
 
 ## Kontrola milníku 4: každý viditelný text a obrázek jde změnit v adminu
 

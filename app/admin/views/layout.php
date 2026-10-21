@@ -13,9 +13,6 @@ $link = static function (string $href, string $label, bool $on, string $extra = 
 <meta name="robots" content="noindex, nofollow">
 <title><?= e($title) ?> – Administrace VH Works</title>
 <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;600;700&amp;family=Montserrat:wght@400;500;600;700&amp;display=swap">
 <link rel="stylesheet" href="/assets/css/admin.css?v=<?= e((string) @filemtime(PUBLIC_PATH . '/assets/css/admin.css')) ?>">
 <script src="/assets/js/admin.js?v=<?= e((string) @filemtime(PUBLIC_PATH . '/assets/js/admin.js')) ?>" defer></script>
 </head>

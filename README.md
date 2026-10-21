@@ -96,6 +96,11 @@ Adresu, kam chodí poptávky, nastavte v Nastavení › E-mail a SMTP › E-mail
 - Každá stránka a položka má historii posledních 10 uložení s možností obnovit a tlačítko Náhled (neuložený obsah v nové záložce).
 - Záloha: Nastavení › Záloha › Stáhnout zálohu (databáze + obrázky, bez příloh poptávek).
 
+## Písma
+
+Exo 2 a Montserrat (Google Fonts, licence OFL) jsou kvůli rychlosti a GDPR hostované lokálně v `public/assets/fonts/`
+(variabilní woff2, latin + latin-ext). Definice `@font-face` jsou na začátku `site.css` a v `fonts.css` (administrace).
+
 ## Cookies a analytika
 
 Web nepoužívá analytiku ani sledování, proto nemá cookie lištu. Jediná cookie (`vhw`) je technická relace

@@ -1,4 +1,5 @@
 /* VH Works – administrace. Stejné barvy a písma jako web. */
+@import url(fonts.css);
 :root {
   --a-bg: #EEF0F2; --a-panel: #F9FAFB; --a-white: #FFFFFF; --a-line: #CDD1D6; --a-line-soft: #DDE1E5;
   --a-ink: #141517; --a-ink-2: #44484D; --a-ink-3: #55595E; --a-blue: #1A5FD6; --a-blue-d: #154FB4;

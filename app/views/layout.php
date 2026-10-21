@@ -55,9 +55,10 @@ if ($company['ico'] !== '' && !has_placeholder($company['ico'])) {
 <meta name="twitter:card" content="summary_large_image">
 <?php endif ?>
 <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;600;700;800&amp;family=Montserrat:wght@400;500;600;700&amp;display=swap">
+<link rel="preload" href="/assets/fonts/exo2-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/exo2-latin-ext.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/montserrat-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/montserrat-latin-ext.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/site.css?v=<?= e((string) @filemtime(PUBLIC_PATH . '/assets/css/site.css')) ?>">
 <noscript><link rel="stylesheet" href="/assets/css/nojs.css"></noscript>
 <?php if (($css = page_style()) !== ''): ?><style nonce="<?= e(csp_nonce()) ?>"><?= $css ?></style>
