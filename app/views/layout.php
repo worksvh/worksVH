@@ -33,6 +33,12 @@ if ($company['hours_schema'] !== '' && !has_placeholder($company['hours_schema']
 if ($company['ico'] !== '' && !has_placeholder($company['ico'])) {
     $ld['taxID'] = $company['ico'];
 }
+if ($company['dic'] !== '' && !has_placeholder($company['dic'])) {
+    $ld['vatID'] = $company['dic'];
+}
+if ($company['operator'] !== '' && !has_placeholder($company['operator'])) {
+    $ld['legalName'] = $company['operator'];
+}
 ?><!doctype html>
 <html lang="cs">
 <head>
@@ -74,5 +80,11 @@ if ($company['ico'] !== '' && !has_placeholder($company['ico'])) {
 <?= $content ?>
 </main>
 <?php partial('footer') ?>
+<?php if (!empty($display['cookie_bar']) && ph($display['cookie_text']) !== ''): ?>
+<div class="cookie-bar" role="region" aria-label="Cookies" data-cookie-bar hidden>
+  <p><?= t($display['cookie_text']) ?><?php if (ph($display['cookie_link']) !== ''): ?> <a href="/ochrana-osobnich-udaju"><?= t($display['cookie_link']) ?></a><?php endif ?></p>
+  <button type="button" class="btn btn-dark" data-cookie-ok><?= t($display['cookie_button'] ?: 'OK') ?></button>
+</div>
+<?php endif ?>
 </body>
 </html>

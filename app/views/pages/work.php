@@ -44,9 +44,9 @@ $slugById = array_column(array_map(static fn($c) => ['id' => $c['id'], 'slug' =>
       $visible += (int) $show;
       $cat = $catById[$d['category']] ?? null; ?>
       <figure class="work-card" data-cat="<?= e($slug) ?>"<?= $show ? '' : ' hidden' ?>>
-        <div class="photo photo--4x3"><?= img($d['photo'], ['sizes' => '(min-width: 1200px) 30vw, (min-width: 800px) 45vw, 100vw']) ?></div>
+        <div class="photo photo--4x3"><?= img($d['photo'], ['sizes' => '(min-width: 1200px) 30vw, (min-width: 800px) 45vw, 100vw']) ?><?php if ($cat): ?><span class="photo-badge"><?= t($cat['data']['label']) ?></span><?php endif ?></div>
         <figcaption>
-          <span class="work-card-top"><span class="work-card-title"><?= t($d['title']) ?></span><?php if ($cat): ?><span class="mono-sm mono-blue"><?= t($cat['data']['label']) ?></span><?php endif ?></span>
+          <span class="work-card-title"><?= t($d['title']) ?></span>
           <?php if (ph($d['spec']) !== ''): ?><span class="mono"><?= t($d['spec']) ?></span><?php endif ?>
         </figcaption>
       </figure>

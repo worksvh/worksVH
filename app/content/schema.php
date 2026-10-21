@@ -189,10 +189,18 @@ return [
                 'people' => [
                     'label' => 'Lidé',
                     'anchor' => 'lide',
-                    'help' => 'Karty lidí se upravují v sekci Lidé.',
+                    'help' => 'Karty s portréty se upravují v sekci Lidé. Dokud tam žádný člověk není zobrazený, ukáže se místo nich složení týmu.',
                     'fields' => [
                         'title' => ['type' => 'text', 'label' => 'Nadpis', 'required' => true],
                         'text' => ['type' => 'textarea', 'label' => 'Text'],
+                        'team' => [
+                            'type' => 'repeater', 'label' => 'Složení týmu', 'max' => 6, 'item_label' => 'role',
+                            'help' => 'Velké číslo a role, např. 3 → CNC obráběči. Zobrazí se, když v sekci Lidé není nikdo s fotkou.',
+                            'fields' => [
+                                'count' => ['type' => 'text', 'label' => 'Počet', 'required' => true, 'maxLength' => 4],
+                                'role' => ['type' => 'text', 'label' => 'Role', 'required' => true],
+                            ],
+                        ],
                     ],
                 ],
                 'visit' => [
@@ -380,9 +388,14 @@ return [
                 'ico_label' => ['type' => 'text', 'label' => 'Popisek před IČO', 'help' => 'Obvykle „IČO“.'],
                 'dic' => ['type' => 'text', 'label' => 'DIČ'],
                 'dic_label' => ['type' => 'text', 'label' => 'Popisek před DIČ', 'help' => 'Obvykle „DIČ“.'],
+                'operator' => ['type' => 'text', 'label' => 'Provozovatel webu', 'help' => 'Obchodní jméno podle rejstříku, např. „Vladimír Hujer“. Zobrazí se v patičce a na Kontaktu.'],
+                'operator_label' => ['type' => 'text', 'label' => 'Popisek před provozovatelem', 'default' => 'Provozovatel'],
+                'operator_address' => ['type' => 'text', 'label' => 'Sídlo provozovatele', 'help' => 'Adresa z rejstříku (může se lišit od adresy dílny).'],
+                'register_note' => ['type' => 'text', 'label' => 'Údaj o zápisu v rejstříku', 'default' => 'Fyzická osoba zapsaná v živnostenském rejstříku.'],
                 'map_image' => ['type' => 'image', 'label' => 'Obrázek mapy', 'help' => 'Statický snímek mapy (žádné vložené mapy kvůli cookies). Dokud chybí, zobrazí se šedé místo s textem z popisu.'],
                 'map_url' => ['type' => 'url', 'label' => 'Odkaz na mapu', 'help' => 'Kliknutím na mapu se otevře tento odkaz (Google Mapy nebo Mapy.cz).'],
                 'map_link' => ['type' => 'text', 'label' => 'Text odkazu na mapu'],
+                'map_credit' => ['type' => 'text', 'label' => 'Zdroj mapy', 'help' => 'Malý text v rohu mapy. U mapy z OpenStreetMap je povinný („© přispěvatelé OpenStreetMap“).'],
             ],
         ],
 
@@ -392,6 +405,10 @@ return [
                 'logo' => ['type' => 'image', 'label' => 'Logo', 'svg' => true, 'help' => 'Ideálně SVG. Na webu se zobrazí ve výšce 46 px. Prázdné = výchozí logo.'],
                 'hide_placeholders' => ['type' => 'toggle', 'label' => 'Skrýt nevyplněné hodnoty na webu', 'help' => 'Texty v hranatých závorkách [ … ] se na webu nahradí prázdnem.'],
                 'skip_link' => ['type' => 'text', 'label' => 'Odkaz „Přeskočit na obsah“', 'help' => 'Je vidět jen při ovládání klávesnicí.'],
+                'cookie_bar' => ['type' => 'toggle', 'label' => 'Zobrazit lištu o cookies', 'default' => true, 'help' => 'Informační lišta dole na webu. Web používá jen technickou cookie, souhlas proto není potřeba. Kdyby se přidala analytika (Google Analytics, Meta Pixel), je nutné lištu rozšířit o souhlas.'],
+                'cookie_text' => ['type' => 'textarea', 'label' => 'Cookies – text', 'default' => 'Tento web používá jen nezbytné technické cookies pro odeslání formuláře. Nesledujeme vás ani nepoužíváme reklamní cookies.'],
+                'cookie_link' => ['type' => 'text', 'label' => 'Cookies – text odkazu na zásady', 'default' => 'Více informací'],
+                'cookie_button' => ['type' => 'text', 'label' => 'Cookies – tlačítko', 'default' => 'Rozumím'],
             ],
         ],
 
@@ -409,6 +426,9 @@ return [
                 'button' => ['type' => 'text', 'label' => 'Text tlačítka vpravo', 'required' => true],
                 'button_url' => ['type' => 'url', 'label' => 'Odkaz tlačítka', 'required' => true],
                 'privacy_link' => ['type' => 'text', 'label' => 'Text odkazu na ochranu osobních údajů (patička)'],
+                'credit_label' => ['type' => 'text', 'label' => 'Autor webu – text', 'default' => 'Web vytvořil'],
+                'credit_name' => ['type' => 'text', 'label' => 'Autor webu – název', 'default' => 'Weblyx', 'help' => 'Prázdné = v patičce se nezobrazí.'],
+                'credit_url' => ['type' => 'url', 'label' => 'Autor webu – odkaz', 'default' => 'https://www.weblyx.cz'],
             ],
         ],
 

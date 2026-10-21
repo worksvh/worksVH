@@ -178,4 +178,18 @@
     var firstInvalid = form.querySelector('[aria-invalid="true"]');
     if (firstInvalid) firstInvalid.focus(); else if (alert) alert.focus();
   }
+
+  /* ---------- lišta o cookies ---------- */
+  var bar = document.querySelector('[data-cookie-bar]');
+  if (bar) {
+    var KEY = 'vhw-cookies-ok';
+    var seen = false;
+    try { seen = localStorage.getItem(KEY) === '1'; } catch (e) { /* soukromé okno */ }
+    if (!seen) bar.hidden = false;
+    var ok = bar.querySelector('[data-cookie-ok]');
+    if (ok) ok.addEventListener('click', function () {
+      try { localStorage.setItem(KEY, '1'); } catch (e) { /* nevadí */ }
+      bar.hidden = true;
+    });
+  }
 })();

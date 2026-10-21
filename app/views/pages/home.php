@@ -78,11 +78,8 @@ $posLabel = ph($part['pos_label']);
       $cat = $categories[$w['data']['category']] ?? null; ?>
       <?php if ($i === 1): ?><div class="home-work-side"><?php endif ?>
       <figure class="work-fig<?= $i === 0 ? ' work-fig--big' : '' ?>">
-        <div class="photo <?= $i === 0 ? 'photo--home-big' : 'photo--home-small' ?>"><?= img($w['data']['photo'], ['sizes' => $i === 0 ? '(min-width: 900px) 58vw, 100vw' : '(min-width: 900px) 38vw, 100vw']) ?></div>
-        <figcaption class="fig-cap">
-          <span class="strong"><?= t($w['data']['title']) ?></span>
-          <?php if ($cat): ?><span class="mono"><?= t($cat['data']['label']) ?></span><?php endif ?>
-        </figcaption>
+        <div class="photo <?= $i === 0 ? 'photo--home-big' : 'photo--home-small' ?>"><?= img($w['data']['photo'], ['sizes' => $i === 0 ? '(min-width: 900px) 58vw, 100vw' : '(min-width: 900px) 38vw, 100vw']) ?><?php if ($cat): ?><span class="photo-badge"><?= t($cat['data']['label']) ?></span><?php endif ?></div>
+        <figcaption class="fig-cap"><?= t($w['data']['title']) ?></figcaption>
       </figure>
       <?php if ($i > 0 && $i === count($works) - 1): ?></div><?php endif ?>
     <?php endforeach ?>

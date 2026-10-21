@@ -37,8 +37,10 @@ $accept = '.' . implode(',.', array_keys(INQ_FILE_TYPES));
       <?php endif ?>
       <div><dt class="mono-sm"><?= t($h['l_address']) ?></dt><dd><?= t($c['street']) ?><br><?= t(trim($c['zip'] . ' ' . $c['city'])) ?></dd></div>
       <?php if (ph($c['hours']) !== ''): ?><div><dt class="mono-sm"><?= t($h['l_hours']) ?></dt><dd><?= tbr($c['hours']) ?></dd></div><?php endif ?>
-      <?php if (ph($c['ico']) !== '' || ph($c['dic']) !== ''): ?>
+      <?php if (ph($c['ico']) !== '' || ph($c['dic']) !== '' || ph($c['operator']) !== ''): ?>
         <div><dt class="mono-sm"><?= t($h['l_billing']) ?></dt><dd>
+          <?php if (ph($c['operator']) !== ''): ?><?= t($c['operator']) ?><br><?php endif ?>
+          <?php if (ph($c['operator_address']) !== ''): ?><?= t($c['operator_address']) ?><br><?php endif ?>
           <?php if (ph($c['ico']) !== ''): ?><?= t($c['ico_label']) ?> <?= t($c['ico']) ?><br><?php endif ?>
           <?php if (ph($c['dic']) !== ''): ?><?= t($c['dic_label']) ?> <?= t($c['dic']) ?><?php endif ?>
         </dd></div>

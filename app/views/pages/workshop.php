@@ -50,6 +50,7 @@ $c = setting('company');
     <h2 class="h2"><?= t($pp['title']) ?></h2>
     <?php if (ph($pp['text']) !== ''): ?><p class="text-17"><?= tbr($pp['text']) ?></p><?php endif ?>
   </div>
+  <?php if ($people): ?>
   <div class="people-cards">
     <?php foreach ($people as $p): $d = $p['data']; ?>
       <figure class="person">
@@ -61,6 +62,13 @@ $c = setting('company');
       </figure>
     <?php endforeach ?>
   </div>
+  <?php elseif ($pp['team']): ?>
+  <ul class="team">
+    <?php foreach ($pp['team'] as $m): ?>
+      <li class="team-item"><span class="team-count"><?= t($m['count']) ?></span><span class="team-role"><?= t($m['role']) ?></span></li>
+    <?php endforeach ?>
+  </ul>
+  <?php endif ?>
 </section>
 
 <section id="navsteva" class="wrap section-pad section-pad--bottom">

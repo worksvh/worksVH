@@ -8,4 +8,5 @@ $hasUrl = trim((string) $c['map_url']) !== '';
     <?= img($c['map_image'], ['class' => 'map-img', 'sizes' => '(min-width: 900px) 50vw, 100vw']) ?>
     <?php if ($hasUrl && ph($c['map_link']) !== ''): ?><span class="map-cta mono"><?= t($c['map_link']) ?> ↗</span><?php endif ?>
   <?php if ($hasUrl): ?></a><?php endif ?>
+  <?php if (ph($c['map_credit']) !== ''): ?><span class="map-credit"><?= t($c['map_credit']) ?></span><?php endif ?>
 </div>

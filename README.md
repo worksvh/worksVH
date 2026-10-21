@@ -103,7 +103,7 @@ Exo 2 a Montserrat (Google Fonts, licence OFL) jsou kvůli rychlosti a GDPR host
 
 ## Cookies a analytika
 
-Web nepoužívá analytiku ani sledování, proto nemá cookie lištu. Jediná cookie (`vhw`) je technická relace
+Web nepoužívá analytiku ani sledování, souhlas s cookies proto není potřeba; dole je jen informační lišta (texty a vypnutí v Nastavení › Logo a zobrazení). Jediná cookie (`vhw`) je technická relace
 pro poptávkový formulář (ochrana CSRF) a administraci.
 **Pokud se později přidá analytika (Google Analytics, Meta Pixel apod.), je nutné doplnit lištu se souhlasem**
 a skripty spouštět až po souhlasu. Mapa je proto jen statický obrázek s odkazem na Mapy.cz, ne vložený iframe.
