@@ -2,131 +2,109 @@
 
 Web nástrojárny VH Works (Úvaly u Prahy) s jednoduchou administrací, ve které jde upravit každý text, obrázek a údaj na webu.
 
-- PHP 8.2+ bez frameworku, SQLite (PDO), vanilla JS, žádný build krok
-- Composer jen pro `phpmailer/phpmailer`
+- Next.js 16 (App Router), React 19, TypeScript; vzhled je čisté CSS v `public/assets/css/`, drobné skripty v `public/assets/js/`
+- Databáze Turso (libSQL), soubory ve Vercel Blob, e-maily přes Resend, hosting Vercel
 - Zadání: `SPEC.md`, schválené návrhy: `design/`, rozhodnutí: `DECISIONS.md`
 
 ## Lokální spuštění
 
 ```bash
-composer install                 # PHPMailer (bez něj se e-maily jen ukládají do logu)
-cp .env.example .env             # už existuje, pokud jste repo jen naklonovali, vytvořte
-php app/cli.php migrate          # vytvoří storage/database.sqlite a naplní výchozí obsah
-php app/cli.php create-admin vy@firma.cz
-php -S localhost:8000 -t public public/router.php
+npm install
+cp .env.example .env        # vyplňte TURSO_URL, TURSO_TOKEN, APP_KEY (viz komentáře v souboru)
+npm run migrate             # vytvoří/aktualizuje tabulky a doplní výchozí obsah, existující nepřepíše
+npm run create-admin -- vy@firma.cz
+npm run dev
 ```
 
-Web: http://localhost:8000, administrace: http://localhost:8000/admin
+Web: http://localhost:3000, administrace: http://localhost:3000/admin
 
-**Přílohy poptávek lokálně:** vestavěný server PHP čte limity z `php.ini` (výchozí jsou 2 MB na soubor a 8 MB na celý formulář).
-Pro test s většími přílohami spusťte server takto:
+- **Bez `BLOB_READ_WRITE_TOKEN`** se obrázky ukládají do `public/media/` a přílohy poptávek do `storage/poptavky/`.
+- **Bez `RESEND_API_KEY` nebo `MAIL_FROM`** se e-maily neodesílají, uloží se do `storage/logs/mail/*.txt` (na Vercelu jen do logu).
+- Lokálně jde použít i soubor místo Turso: `TURSO_URL=file:storage/local.db`.
 
-```bash
-php -d upload_max_filesize=20M -d post_max_size=55M -d max_file_uploads=10 -S localhost:8000 -t public public/router.php
-```
+## Nasazení na Vercel
 
-Na hostingu se limity nastaví samy přes `public/.htaccess` (mod_php) nebo `public/.user.ini` (PHP-FPM).
+Repo je napojené na Vercel, každý push do `main` se sám nasadí. V projektu na Vercelu je potřeba:
 
-**E-maily lokálně:** když v `.env` (ani v Nastavení › E-mail a SMTP) není `SMTP_HOST`, e-maily se neodesílají,
-ale celé se uloží do `storage/logs/mail/*.eml`.
+1. **Storage › Create › Blob** (veřejný) a připojit ho k projektu – Vercel sám doplní `BLOB_READ_WRITE_TOKEN`.
+2. **Settings › Environment Variables** (Production i Preview):
+   - `APP_URL` – adresa webu bez lomítka na konci, např. `https://www.vhworks.cz`
+   - `APP_KEY` – dlouhý náhodný řetězec (`openssl rand -hex 32`), podepisuje přihlášení; po změně se všichni odhlásí
+   - `TURSO_URL`, `TURSO_TOKEN` – databáze
+   - `RESEND_API_KEY`, `MAIL_FROM` – e-maily; `MAIL_FROM` musí být na doméně ověřené v Resendu (např. `web@vhworks.cz`)
+   - `CRON_SECRET` – náhodný řetězec pro denní údržbu
+   - `INQUIRY_TO` – nepovinné, výchozí adresa pro poptávky (jinak Nastavení › E-mail)
+3. Jednorázově nahrát stávající obrázky do Blob: do lokálního `.env` dát `BLOB_READ_WRITE_TOKEN` a spustit `npm run upload-media`.
+4. Doménu přidat v Settings › Domains a u registrátora nastavit DNS podle pokynů Vercelu.
 
-## Databáze: Turso (libSQL)
+Funkce běží v regionu `dub1` (Irsko, stejně jako databáze Turso), viz `vercel.json`.
 
-Data webu (obsah, uživatelé, poptávky, historie) jsou v Turso, když je v `.env` vyplněné `TURSO_URL` a `TURSO_TOKEN`.
-Bez nich web použije lokální SQLite `storage/database.sqlite` (např. pro práci offline).
+### Proč přílohy jdou přímo do Blob
 
-- Připojení jde přes HTTP API Turso (`/v2/pipeline`), na hostingu stačí rozšíření PHP `curl`.
-- Obsah webu (stránky, nastavení, sbírky, média) se čte z lokální kopie `storage/cache/mirror.sqlite`, takže stránky
-  nečekají na síť. Kopie se stáhne jedním požadavkem, obnoví se hned po každém uložení v adminu a jinak
-  nejpozději po `TURSO_MIRROR_TTL` sekundách (výchozí 300).
-- Zápisy (uložení, poptávky, přihlášení) jdou vždy přímo do Turso; uložení stránky a její historie je jeden požadavek.
-- Přenos dat z lokální SQLite do Turso: `php app/cli.php import-sqlite [soubor]` (data v Turso přepíše).
-- Záloha (Nastavení › Záloha, `php app/cli.php backup`) stáhne celou databázi z Turso do souboru SQLite v ZIPu.
-- Obrázky a přílohy poptávek zůstávají na disku serveru (`public/media/`, `storage/inquiries/`), Turso je neobsahuje.
+Vercel nepřijme požadavek větší než 4,5 MB. Formulář poptávky proto soubory (až 5 × 20 MB) nahraje z prohlížeče
+rovnou do Vercel Blob (`/api/poptavka/upload` vydává jednorázové povolení) a serveru pošle jen jejich adresy.
+Stejně tak obrázky v administraci (`/admin/api/media/token`); WebP varianty se pak vytvoří na serveru (sharp).
+Nedokončené nahrávky starší než den maže denní cron.
+
+### Denní údržba (Vercel Cron)
+
+`/api/cron` ve 3:00: anonymizace poptávek po lhůtě z Nastavení › E-mail, úklid nedokončených nahrávek, starých náhledů
+a záznamů o pokusech o přihlášení. Anonymizace se navíc spouští i při otevření přehledu v administraci.
 
 ## Struktura
 
 ```
-public/          jediná veřejná složka (document root): index.php, router.php, assets/, media/
-app/             bootstrap, config, db, cli.php, migrations/, content/schema.php + seed.php, views/, admin/, lib/
-storage/         database.sqlite, inquiries/ (přílohy, neveřejné), logs/, backups/
-design/          předlohy stránek (nemazat)
+src/app/(site)/      veřejný web (stránky, kontaktní formulář a jeho server action)
+src/app/admin/       administrace (stránky) a admin/api/ (ukládání, média, poptávky…)
+src/app/api/         nahrávání příloh poptávek, cron
+src/components/      šablony webu (site/) a administrace (admin/)
+src/lib/             databáze, obsah, přihlášení, poptávky, e-maily, úložiště souborů
+src/content/         schema.json (všechna editovatelná pole) a seed.json (výchozí obsah)
+src/migrations/      SQL migrace (npm run migrate)
+public/assets/       CSS, JS, písma, logo
+design/              předlohy stránek (nemazat)
 ```
 
 ### Jak přidat nové editovatelné pole
 
-1. Přidejte pole do `app/content/schema.php` (typ, `label`, `help`, `required`…).
-2. Vypište ho v šabloně v `app/views/` (např. `<?= t($page['hero']['nove_pole']) ?>`).
-3. Případně doplňte výchozí hodnotu do `app/content/seed.php`.
+1. Přidejte pole do `src/content/schema.json` (typ, `label`, `help`, `required`, `default`…).
+2. Vypište ho v šabloně (např. `{c.ph(page.hero.nove_pole)}` v `src/app/(site)/…/page.tsx`).
+3. Případně doplňte výchozí hodnotu do `src/content/seed.json`.
 
 Formulář v administraci se vygeneruje sám. Existující obsah v DB se nepřepisuje, nové pole má výchozí hodnotu.
 
-## Nasazení na sdílený hosting (Wedos, Forpsi, Active24)
+### Jak se obsah načítá
 
-Požadavky: PHP 8.2+, rozšíření `pdo_sqlite`, `curl` (Turso), `fileinfo`, `dom`, `mbstring`; doporučeno `gd` (WebP varianty obrázků) a `zip` (zálohy).
-
-1. Lokálně spusťte `composer install --no-dev` (vznikne složka `vendor/`).
-2. Přes FTP/SFTP nahrajte celý projekt **kromě** `storage/database.sqlite`, `.env` a `public/media/*` (ty vzniknou na serveru).
-3. **Document root nastavte na složku `public/`** (Wedos: Nastavení domény › Adresář; Forpsi/Active24: správa webhostingu).
-4. Na serveru vytvořte `.env` podle `.env.example`: `APP_URL=https://www.vhworks.cz`, `APP_ENV=production`, SMTP údaje.
-5. Spusťte migraci a vytvořte správce. Pokud hosting nemá SSH, spusťte příkazy lokálně a nahrajte hotový `storage/database.sqlite`:
-   ```bash
-   php app/cli.php migrate
-   php app/cli.php create-admin majitel@vhworks.cz
-   ```
-6. Zkontrolujte práva zápisu pro `storage/` (včetně podsložek) a `public/media/`.
-7. V `public/.htaccess` odkomentujte přesměrování na HTTPS.
-
-### Když hosting nedovolí změnit document root
-
-Nahrajte obsah `public/` do kořene webu (např. `www/`) a ostatní složky (`app/`, `storage/`, `vendor/`, `.env`) o úroveň výš,
-mimo veřejný web. Pokud ani to nejde, nahrajte vše do kořene webu a:
-
-- v kořenovém `index.php` (zkopírovaný `public/index.php`) upravte cestu na `require __DIR__ . '/app/bootstrap.php';`,
-- v `app/bootstrap.php` nastavte `define('PUBLIC_PATH', BASE_PATH);`,
-- nechte v `app/`, `storage/` a `vendor/` soubory `.htaccess` s `Require all denied` (v `app/` a `storage/` už jsou, pro `vendor/` ho vytvořte),
-- ověřte, že `https://domena/storage/database.sqlite` a `https://domena/.env` vrací 403.
-
-### SMTP
-
-Údaje dostanete u hostingu (např. Wedos: `wes1-smtp.wedos.net`, port 587, STARTTLS, celá e-mailová adresa jako uživatel).
-Zadejte je do `.env`, nebo v administraci v Nastavení › E-mail a SMTP (ty mají přednost).
-Adresu, kam chodí poptávky, nastavte v Nastavení › E-mail a SMTP › E-mail pro poptávky.
-
-### Cron (doporučeno)
-
-```
-0 3 * * *   php /cesta/k/webu/app/cli.php backup      # denní záloha, drží posledních 14
-30 3 * * *  php /cesta/k/webu/app/cli.php anonymize   # anonymizace poptávek po lhůtě (jinak běží při přihlášení do adminu)
-```
+Celý obsah webu (stránky, nastavení, sbírky, média) se z Turso načte jedním dotazem a drží se v cache Next.js
+(`unstable_cache`, značka `content`). Každé uložení v administraci cache hned zneplatní, takže změna je na webu okamžitě.
 
 ## Administrace
 
-- První správce: `php app/cli.php create-admin email`. Další správce přidáte v Nastavení › Uživatelé. Registrace na webu není.
+- První správce: `npm run create-admin -- email`. Další správce přidáte v Nastavení › Uživatelé. Registrace na webu není.
 - Zapomenuté heslo: odkaz na přihlašovací stránce, pošle jednorázový odkaz platný 1 hodinu.
 - Po 5 neúspěšných pokusech je přihlášení z dané IP zablokované na 15 minut.
 - **K doplnění:** texty v [hranatých závorkách] jsou údaje, které ještě chybí od klienta. Přehled je vypíše s odkazem přímo na pole.
   Na webu se zobrazují, dokud v Nastavení › Logo a zobrazení nezapnete „Skrýt nevyplněné hodnoty na webu“.
 - Každá stránka a položka má historii posledních 10 uložení s možností obnovit a tlačítko Náhled (neuložený obsah v nové záložce).
-- Záloha: Nastavení › Záloha › Stáhnout zálohu (databáze + obrázky, bez příloh poptávek).
+- Záloha: Nastavení › Záloha › Stáhnout zálohu (databáze jako JSON + SQL pro obnovu, obrázky; bez příloh poptávek).
+  Turso má navíc vlastní automatické zálohy s obnovou k okamžiku.
 
 ## Písma
 
-Exo 2 a Montserrat (Google Fonts, licence OFL) jsou kvůli rychlosti a GDPR hostované lokálně v `public/assets/fonts/`
-(variabilní woff2, latin + latin-ext). Definice `@font-face` jsou na začátku `site.css` a v `fonts.css` (administrace).
+Exo 2 a Montserrat (Google Fonts, licence OFL) jsou kvůli rychlosti a GDPR hostované lokálně v `public/assets/fonts/`.
 
 ## Cookies a analytika
 
-Web nepoužívá analytiku ani sledování, souhlas s cookies proto není potřeba; dole je jen informační lišta (texty a vypnutí v Nastavení › Logo a zobrazení). Jediná cookie (`vhw`) je technická relace
-pro poptávkový formulář (ochrana CSRF) a administraci.
+Web nepoužívá analytiku ani sledování, souhlas s cookies proto není potřeba; dole je jen informační lišta (texty a vypnutí
+v Nastavení › Logo a zobrazení). Technické cookies: `vhw_s` (přihlášení do administrace), `vhw_preview` a `vhw_flash` (jen v administraci).
 **Pokud se později přidá analytika (Google Analytics, Meta Pixel apod.), je nutné doplnit lištu se souhlasem**
-a skripty spouštět až po souhlasu. Mapa je proto jen statický obrázek s odkazem na Mapy.cz, ne vložený iframe.
+a skripty spouštět až po souhlasu. Mapa je proto jen statický obrázek s odkazem, ne vložený iframe.
 
 ## Bezpečnost
 
-- `app/`, `storage/` a `.env` jsou mimo document root, navíc s `.htaccess` `Require all denied`.
-- V `public/media/` je zakázané spouštění skriptů; SVG se při nahrání čistí a servíruje se sandboxovou CSP.
-- Přílohy poptávek leží v `storage/inquiries/{id}/` pod náhodnými jmény a stahují se jen po přihlášení přes PHP.
-- CSRF token ve všech formulářích, prepared statements, escapování výstupů, whitelist pro rich text.
-- Hlavičky CSP, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, X-Frame-Options; HSTS jen při `APP_ENV=production` na HTTPS.
-- Chyby se logují do `storage/logs/`, návštěvníkovi se nevypisují.
+- Přihlášení je podepsaná cookie (HMAC s `APP_KEY`, httpOnly, SameSite=Lax), uživatel se ověřuje v databázi při každém požadavku.
+- Formuláře administrace kontrolují token svázaný s relací a hlavičku Origin; kontaktní formulář je server action (Next.js kontroluje původ),
+  má skryté pole proti robotům, minimální dobu vyplnění a limit 5 poptávek za hodinu z jedné IP.
+- Přílohy poptávek mají náhodná jména, odkazy na ně se nikde nezobrazují a stahují se jen po přihlášení přes `/admin/api/inquiry/…`.
+- SVG se při nahrání čistí, rich text projde whitelistem (odstavce, tučně, odkazy, seznamy).
+- Hlavičky X-Content-Type-Options, Referrer-Policy, Permissions-Policy, X-Frame-Options (`next.config.ts`); administrace má noindex a no-store.

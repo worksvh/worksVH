@@ -6,6 +6,24 @@
   var csrf = document.body.getAttribute('data-csrf');
   var PH = /\[[^\[\]]+\]/;
 
+  /* nahrání obrázku: na Vercelu nejdřív přímo do Blob (window.vhwBlobUpload), pak zpracování na serveru */
+  var uploadMedia = function (file, alt) {
+    var opts = { method: 'POST', credentials: 'same-origin', headers: { Accept: 'application/json', 'X-CSRF-Token': csrf } };
+    if (window.vhwBlobUpload) {
+      return window.vhwBlobUpload(file).then(function (url) {
+        opts.headers['Content-Type'] = 'application/json';
+        opts.body = JSON.stringify({ url: url, name: file.name, alt: alt || '' });
+        return fetch('/admin/api/media/upload', opts);
+      });
+    }
+    var fd = new FormData();
+    fd.append('file', file);
+    fd.append('alt', alt || '');
+    fd.append('_csrf', csrf);
+    opts.body = fd;
+    return fetch('/admin/api/media/upload', opts);
+  };
+
   /* ---------- potvrzení ---------- */
   document.addEventListener('submit', function (e) {
     var f = e.target;
@@ -24,13 +42,65 @@
     dirty = true;
     if (note) note.hidden = false;
   };
+  var fieldId = function (path) { return 'f-' + path.split('.').join('-'); };
+  var showErrors = function (errors, general) {
+    $$('.has-error', editForm).forEach(function (f) { f.classList.remove('has-error'); });
+    $$('[data-err-generated]', editForm).forEach(function (el) { el.remove(); });
+    $$('[aria-invalid="true"]', editForm).forEach(function (el) { el.removeAttribute('aria-invalid'); });
+    var box = $('[data-err-box]');
+    var keys = Object.keys(errors);
+    box.innerHTML = '';
+    var strong = document.createElement('strong');
+    strong.textContent = general || ('Neuloženo – formulář obsahuje chyby (' + keys.length + ').');
+    box.appendChild(strong);
+    if (keys.length) {
+      var ul = document.createElement('ul');
+      keys.forEach(function (path) {
+        var id = fieldId(path);
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        a.href = '#' + id;
+        a.textContent = errors[path];
+        li.appendChild(a);
+        ul.appendChild(li);
+        var el = document.getElementById(id);
+        var field = el && (el.closest('[data-field]') || el.parentNode);
+        if (field) {
+          field.classList.add('has-error');
+          var p = document.createElement('p');
+          p.className = 'err';
+          p.id = id + '-err';
+          p.setAttribute('data-err-generated', '');
+          p.textContent = errors[path];
+          field.appendChild(p);
+          if (el.matches('input, textarea, select, [contenteditable]')) el.setAttribute('aria-invalid', 'true');
+        }
+      });
+      box.appendChild(ul);
+    }
+    box.hidden = false;
+    box.focus();
+    box.scrollIntoView({ block: 'start' });
+  };
   if (editForm) {
     editForm.addEventListener('input', markDirty);
     editForm.addEventListener('change', markDirty);
     editForm.addEventListener('submit', function (e) {
       syncRte();
       var sub = e.submitter;
-      if (!sub || !sub.hasAttribute('data-preview')) dirty = false;
+      if (sub && sub.hasAttribute('data-preview')) return; // náhled jde klasicky do nové záložky
+      if (editForm.hasAttribute('data-plain')) { dirty = false; return; }
+      e.preventDefault();
+      var btn = sub || $('.btn-primary', editForm);
+      if (btn) btn.disabled = true;
+      fetch(editForm.getAttribute('action'), { method: 'POST', body: new FormData(editForm), headers: { Accept: 'application/json' }, credentials: 'same-origin' })
+        .then(function (r) { return r.json().catch(function () { return { error: 'Uložení se nepovedlo (' + r.status + ').' }; }); })
+        .then(function (d) {
+          if (btn) btn.disabled = false;
+          if (d.redirect) { dirty = false; location.href = d.redirect; return; }
+          showErrors(d.errors || {}, d.error);
+        })
+        .catch(function () { if (btn) btn.disabled = false; showErrors({}, 'Uložení se nepovedlo, zkontrolujte připojení a zkuste to znovu.'); });
     });
     window.addEventListener('beforeunload', function (e) {
       if (dirty) { e.preventDefault(); e.returnValue = ''; }
@@ -267,7 +337,7 @@
     });
   };
   var loadPicker = function () {
-    return fetch('/admin/media/seznam.json', { headers: { Accept: 'application/json' }, credentials: 'same-origin' })
+    return fetch('/admin/api/media', { headers: { Accept: 'application/json' }, credentials: 'same-origin' })
       .then(function (r) { return r.json(); }).then(function (d) { pickerCache = d.items; renderPicker(); });
   };
   var choose = function (m) {
@@ -317,11 +387,8 @@
       var input = this;
       if (!input.files.length) return;
       var err = $('[data-picker-error]', picker);
-      var fd = new FormData();
-      fd.append('file', input.files[0]);
-      fd.append('_csrf', csrf);
       err.hidden = true;
-      fetch('/admin/media/nahrat', { method: 'POST', body: fd, headers: { Accept: 'application/json' }, credentials: 'same-origin' })
+      uploadMedia(input.files[0], '')
         .then(function (r) { return r.json(); })
         .then(function (d) {
           input.value = '';
@@ -370,6 +437,35 @@
     });
     sortable(tbody, 'tr', '[data-row-handle]', save);
   }
+
+  /* ---------- média: nahrání více souborů ---------- */
+  var mu = $('[data-media-upload]');
+  if (mu) mu.addEventListener('submit', function (e) {
+    var input = $('input[type="file"]', mu);
+    if (!input.files.length) return;
+    e.preventDefault();
+    var files = Array.prototype.slice.call(input.files);
+    var alt = $('input[name="alt"]', mu).value;
+    var state = $('[data-media-upload-state]', mu);
+    var btn = $('button[type="submit"]', mu);
+    var errs = [];
+    var done = 0;
+    btn.disabled = true;
+    var next = function () {
+      if (!files.length) {
+        if (errs.length) { state.textContent = errs.join(' '); btn.disabled = false; if (done) setTimeout(function () { location.reload(); }, 1500); }
+        else location.reload();
+        return;
+      }
+      var f = files.shift();
+      state.textContent = 'Nahrávám ' + f.name + '…';
+      uploadMedia(f, alt).then(function (r) { return r.json(); }).then(function (d) {
+        done += (d.items || []).length;
+        errs = errs.concat(d.errors || []);
+      }).catch(function () { errs.push(f.name + ': nahrání se nepovedlo.'); }).then(next);
+    };
+    next();
+  });
 
   /* ---------- média: hledání ---------- */
   var ms = $('[data-media-search]');

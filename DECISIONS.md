@@ -96,3 +96,18 @@ lidé (nadpis, text, karty ze sbírky Lidé) · návštěva (nadpis, adresa a pr
 **Ochrana osobních údajů** – štítek, H1, text (rich text). [x]
 **404** – štítek, nadpis, text, 2 odkazy (Nastavení › Stránka 404). [x]
 **E-maily** – předměty a text potvrzení zákazníkovi (Nastavení › E-mail a SMTP). [x]
+
+## 26. Přechod z PHP na Next.js (Vercel)
+
+Web poběží na Vercelu, který PHP neumí, proto je přepsaný do Next.js 16 (App Router). Vzhled, texty, schéma polí
+a databáze zůstaly stejné: HTML šablony jsou převedené 1:1 do React komponent, CSS a většina JS se nezměnily,
+data v Turso se nemigrovala (jen přibyly tabulky `previews` a `rate_hits`). Schéma a výchozí obsah jsou z PHP
+převedené do `src/content/schema.json` a `seed.json`.
+
+- Soubory: Vercel Blob místo disku. Kvůli limitu 4,5 MB na požadavek se přílohy poptávek i obrázky z adminu
+  nahrávají z prohlížeče přímo do Blob, server dostane jen adresu. Názvy souborů v DB zůstaly stejné (`media/<soubor>`).
+- E-maily: Resend přes HTTP API místo SMTP (pole SMTP v Nastavení zmizela, zůstala jen adresa odesílatele).
+- Přihlášení: podepsaná cookie místo PHP session; hesla z PHP (bcrypt $2y$) fungují dál.
+- Obsah webu se čte z cache Next.js, kterou každé uložení v adminu zneplatní (dřív lokální kopie mirror.sqlite).
+- Formulář poptávky je React komponenta se server action; bez JavaScriptu funguje dál (přílohy pak do 4,5 MB).
+- Lokálně jde vše spustit bez Blob a Resend (soubory na disk, e-maily do logu).
