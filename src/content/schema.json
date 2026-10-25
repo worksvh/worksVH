@@ -988,6 +988,16 @@
                     "label": "Provozní doba pro vyhledávače",
                     "help": "Strojový zápis pro Google, např. „Mo-Fr 07:00-15:30“. Na webu není vidět."
                 },
+                "geo": {
+                    "type": "text",
+                    "label": "Poloha pro vyhledávače",
+                    "help": "Zeměpisná šířka a délka dílny, např. „50.0739, 14.7306“ (v Google Mapách pravým tlačítkem na místo). Na webu není vidět."
+                },
+                "profiles": {
+                    "type": "textarea",
+                    "label": "Profily firmy na jiných webech",
+                    "help": "Odkazy na oficiální profily, každý na nový řádek: Firmy.cz, Google firemní profil, Facebook, LinkedIn… Vyhledávače a AI asistenti podle nich poznají, že jde o stejnou firmu. Na webu nejsou vidět."
+                },
                 "ico": {
                     "type": "text",
                     "label": "IČO"

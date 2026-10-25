@@ -13,6 +13,13 @@ function navActive(url: string, path: string): boolean {
   return u === path || (u !== '/' && path.startsWith(u + '/'))
 }
 
+/** Název podstránky pro drobečkovou navigaci: popisek z menu, jinak titulek stránky. */
+function crumbName(c: Content, path: string, title: string): string {
+  const mi = (c.setting('menu').items as Data[]).find((m) => navActive(m.url, path))
+  const label = mi ? c.ph(mi.label) : ''
+  return label !== '' ? label : c.ph(title)
+}
+
 /** Hlavička stránky (title, popis, sdílení, strukturovaná data) – React je přesune do <head>. */
 function Head({ c, pageKey, path, seo, noindex }: { c: Content; pageKey: string; path: string; seo: Data; noindex: boolean }) {
   const company = c.setting('company')
@@ -23,11 +30,13 @@ function Head({ c, pageKey, path, seo, noindex }: { c: Content; pageKey: string;
   const og = imageAbsUrl(c, seo.image) ?? imageAbsUrl(c, seoDef.image)
   const canonical = appUrl() + (path === '/' ? '/' : path)
 
-  const ld: Data = {
-    '@context': 'https://schema.org',
+  const home = appUrl() + '/'
+  const okVal = (v: unknown) => String(v ?? '').trim() !== '' && !hasPlaceholder(v)
+  const biz: Data = {
     '@type': 'LocalBusiness',
+    '@id': home + '#firma',
     name: company.name,
-    url: appUrl() + '/',
+    url: home,
     telephone: String(company.phone).replace(/\s+/g, ''),
     address: {
       '@type': 'PostalAddress',
@@ -37,13 +46,43 @@ function Head({ c, pageKey, path, seo, noindex }: { c: Content; pageKey: string;
       addressCountry: 'CZ',
     },
   }
-  const okVal = (v: unknown) => v !== '' && !hasPlaceholder(v)
-  if (okVal(company.email)) ld.email = company.email
-  if (okVal(company.hours_schema)) ld.openingHours = company.hours_schema
-  if (okVal(company.ico)) ld.taxID = company.ico
-  if (okVal(company.dic)) ld.vatID = company.dic
-  if (okVal(company.operator)) ld.legalName = company.operator
-  const json = JSON.stringify(ld).replace(/</g, '\\u003c').replace(/&/g, '\\u0026')
+  if (okVal(seoDef.description)) biz.description = seoDef.description
+  const logoUrl = imageAbsUrl(c, c.setting('display').logo) ?? appUrl() + '/assets/img/vh-works-logo.svg'
+  biz.logo = logoUrl
+  biz.image = imageAbsUrl(c, seoDef.image) ?? logoUrl
+  if (okVal(company.email)) biz.email = company.email
+  if (okVal(company.hours_schema)) biz.openingHours = company.hours_schema
+  if (okVal(company.ico)) biz.taxID = company.ico
+  if (okVal(company.dic)) biz.vatID = company.dic
+  if (okVal(company.operator)) biz.legalName = company.operator
+  const geo = String(company.geo ?? '').match(/^\s*(-?\d+(?:\.\d+)?)\s*[,;\s]\s*(-?\d+(?:\.\d+)?)\s*$/)
+  if (geo) biz.geo = { '@type': 'GeoCoordinates', latitude: Number(geo[1]), longitude: Number(geo[2]) }
+  if (okVal(company.map_url)) biz.hasMap = company.map_url
+  const sameAs = String(company.profiles ?? '').split(/\s+/).filter((u) => /^https?:\/\/\S+$/.test(u))
+  if (sameAs.length) biz.sameAs = sameAs
+
+  const graph: Data[] = [
+    biz,
+    { '@type': 'WebSite', '@id': home + '#web', url: home, name: company.name, inLanguage: 'cs', publisher: { '@id': biz['@id'] } },
+  ]
+  if (path !== '/') {
+    graph.push({
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: company.name, item: home },
+        { '@type': 'ListItem', position: 2, name: crumbName(c, path, title), item: canonical },
+      ],
+    })
+  }
+  if (pageKey === 'services') {
+    for (const s of c.items('services')) {
+      const d = s.data as Data
+      if (!okVal(d.title)) continue
+      const text = String(d.description ?? '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim()
+      graph.push({ '@type': 'Service', name: d.title, ...(okVal(text) ? { description: text } : {}), provider: { '@id': biz['@id'] }, areaServed: 'CZ' })
+    }
+  }
+  const json = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(/</g, '\\u003c').replace(/&/g, '\\u0026')
 
   return (
     <>
