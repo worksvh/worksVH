@@ -81,14 +81,26 @@ main:focus { outline: none; }
 }
 
 /* patička */
-.site-footer { display: flex; flex-direction: column; gap: 14px; padding-top: 20px; padding-bottom: 32px; border-top: 1px solid var(--line); font-size: 14px; color: var(--ink-2); }
-.footer-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; }
-.footer-legal { font-size: 12px; color: var(--ink-3); }
-.footer-legal a { color: var(--ink-2); }
-.site-footer .wrap { padding: 0; }
-.footer-right { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: baseline; }
-.footer-right .mono { color: var(--ink-2); text-transform: none; }
-.footer-right a { color: var(--ink-2); }
+.site-footer { background: var(--ink-0); color: #B9BEC4; font-size: 14px; line-height: 1.6; }
+.site-footer a { color: var(--white); text-decoration: none; }
+.site-footer a:hover { color: #8DB2F2; text-decoration: underline; }
+.site-footer ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.footer-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)); gap: 40px 32px; padding-top: clamp(48px, 6vw, 72px); padding-bottom: clamp(40px, 5vw, 56px); }
+.footer-brand { display: flex; flex-direction: column; gap: 18px; max-width: 34ch; }
+.footer-logo { display: inline-block; align-self: flex-start; }
+.footer-logo img { height: 40px; width: auto; }
+.footer-logo img.is-custom { filter: brightness(0) invert(1); }
+.footer-h { font-family: var(--f-head); font-weight: 600; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--white); margin-bottom: 14px; }
+.footer-phone { font-family: var(--f-head); font-weight: 600; font-size: 20px; letter-spacing: -0.01em; }
+.footer-pre { white-space: pre-line; }
+.footer-label { display: block; font-size: 12px; color: #8A9097; }
+.footer-note { font-size: 12px; color: #8A9097; }
+.site-footer [aria-current="page"] { color: #8DB2F2; }
+.footer-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; padding-top: 20px; padding-bottom: 28px; border-top: 1px solid #2A2D31; font-size: 13px; color: #8A9097; }
+.footer-bottom-links { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+.footer-bottom a { color: #B9BEC4; text-decoration: underline; text-underline-offset: 2px; }
+@media (max-width: 960px) { .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .footer-brand { grid-column: 1 / -1; } }
+@media (max-width: 520px) { .footer-grid { grid-template-columns: minmax(0, 1fr); } }
 
 /* nadpisy */
 .h1-home { margin: 0 auto; font-size: clamp(44px, 6.6vw, 104px); line-height: 0.98; letter-spacing: -0.045em; max-width: 14ch; text-wrap: balance; }

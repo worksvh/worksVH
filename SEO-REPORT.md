@@ -20,6 +20,8 @@ Datum: 2026-10-25 · Audit: `seo-geo-audit/scripts/audit.py` nad https://worksvh
 | P1 | BreadcrumbList na podstránkách (název z menu, jinak titulek) | `src/components/site/Shell.tsx` |
 | P1 | Service pro každou viditelnou službu na /sluzby (název + popis z CMS) | `src/components/site/Shell.tsx` |
 | P1 | Nová pole v administraci: Poloha pro vyhledávače, Profily firmy na jiných webech | `src/content/schema.json`, `seed.json` |
+| P1 | Nové titulky a popisy všech stránek, sdílecí obrázky pro Služby, Práce, Dílnu (schváleno 2026-10-25, uloženo v CMS) | DB `pages.seo`, `src/content/seed.json` |
+| P2 | Nová tmavá patička ve 4 sloupcích (všechny texty v Nastavení › Menu a patička) | `src/components/site/Shell.tsx`, `site.css` |
 | P2 | favicon.ico (16/32/48) a apple-touch-icon 180 px z firemní ikony | `public/`, `src/app/(site)/layout.tsx` |
 
 ## Zbývá v kódu (čeká na rozhodnutí nebo data)
@@ -34,8 +36,6 @@ Datum: 2026-10-25 · Audit: `seo-geo-audit/scripts/audit.py` nad https://worksvh
 ## Návrhy obsahu (neaplikováno bez souhlasu)
 | Stránka | Návrh | Proč |
 | --- | --- | --- |
-| /sluzby | Titulek „Služby – konstrukce, CNC, přípravky a stroje“ (teď 68 znaků s příponou) | Google titulky nad ~60 znaků ořezává |
-| /kontakt | Titulek „Kontakt a poptávka – nástrojárna Úvaly“ (teď 29 znaků) | Krátký titulek bez oboru a místa |
 | / | V prvním odstavci jmenovat obor + místo + pro koho (už z velké části splněno) | AI citují hlavně první třetinu stránky |
 | /sluzby | U každé služby 1–2 konkrétní údaje (materiály, tolerance, velikost dílů, typické dodací lhůty) | Konkrétní data zvyšují citovanost |
 | nová | Krátké FAQ na /sluzby nebo /kontakt („Co od vás potřebujete k poptávce?“, „Děláte i kusovou výrobu?“, „Jak rychle?“) + FAQPage schema | Otázky zákazníka = formát AI odpovědí |

@@ -1136,6 +1136,32 @@
                     "label": "Odkaz tlačítka",
                     "required": true
                 },
+                "footer_text": {
+                    "type": "textarea",
+                    "label": "Patička – krátký popis firmy",
+                    "help": "Jedna až dvě věty pod logem v patičce.",
+                    "default": "Rodinná nástrojárna v Úvalech u Prahy. Konstrukce, CNC obrábění, přípravky a jednoúčelové stroje pro firmy od roku 1990."
+                },
+                "footer_h_contact": {
+                    "type": "text",
+                    "label": "Patička – nadpis sloupce s kontaktem",
+                    "default": "Kontakt"
+                },
+                "footer_h_pages": {
+                    "type": "text",
+                    "label": "Patička – nadpis sloupce se stránkami",
+                    "default": "Stránky"
+                },
+                "footer_h_billing": {
+                    "type": "text",
+                    "label": "Patička – nadpis sloupce s fakturačními údaji",
+                    "default": "Fakturační údaje"
+                },
+                "copyright": {
+                    "type": "text",
+                    "label": "Patička – text za © rokem a názvem firmy",
+                    "default": "Všechna práva vyhrazena."
+                },
                 "privacy_link": {
                     "type": "text",
                     "label": "Text odkazu na ochranu osobních údajů (patička)"

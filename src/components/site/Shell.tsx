@@ -134,41 +134,79 @@ function Header({ c, path, pageKey }: { c: Content; path: string; pageKey: strin
   )
 }
 
-function Footer({ c }: { c: Content }) {
+function Footer({ c, path }: { c: Content; path: string }) {
   const co = c.setting('company')
   const menu = c.setting('menu')
+  const logo = c.setting('display').logo
+  const lm = c.media(logo?.media)
   const ph = c.ph
-  const addr = [ph(co.street), ph(`${co.zip} ${co.city}`.trim())].filter(Boolean).join(', ')
-  const left = [ph(co.name), addr].filter(Boolean).join(' · ')
   const email = ph(co.email)
-  const operator = [ph(co.operator), ph(co.operator_address)].filter(Boolean).join(', ')
-  const legal = [
-    operator !== '' ? (co.operator_label !== '' ? `${ph(co.operator_label)}: ` : '') + operator : '',
-    ph(co.ico) !== '' ? `${ph(co.ico_label)} ${ph(co.ico)}` : '',
-    ph(co.dic) !== '' ? `${ph(co.dic_label)} ${ph(co.dic)}` : '',
-  ].filter(Boolean)
-  const note = ph(co.register_note)
+  const phone = ph(co.phone)
+  const city = ph(`${co.zip} ${co.city}`.trim())
+  const hours = ph(co.hours)
+  const mapUrl = String(co.map_url ?? '').trim()
+  const operator = ph(co.operator)
   const credit = ph(menu.credit_name)
+  const pages = [...(menu.items as Data[]), { label: menu.button, url: menu.button_url }].filter((p) => ph(p.label) !== '')
   return (
-    <footer className="site-footer wrap">
-      <div className="footer-row">
-        <span>{left}</span>
-        <span className="footer-right">
-          {email !== '' && (hasPlaceholder(co.email) ? <span className="mono">{email}</span> : <a href={`mailto:${email}`}>{email}</a>)}
-          <a href="/ochrana-osobnich-udaju">{ph(menu.privacy_link)}</a>
-        </span>
+    <footer className="site-footer">
+      <div className="wrap footer-grid">
+        <div className="footer-brand">
+          <a href="/" className="footer-logo">
+            {lm ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={mediaUrl(lm.filename)} alt={ph(co.name)} height={40} className="is-custom" />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src="/assets/img/vh-works-logo-white.svg" alt={ph(co.name)} width={242} height={40} />
+            )}
+          </a>
+          {ph(menu.footer_text) !== '' && <p>{ph(menu.footer_text)}</p>}
+        </div>
+
+        <div className="footer-col">
+          {ph(menu.footer_h_contact) !== '' && <p className="footer-h">{ph(menu.footer_h_contact)}</p>}
+          <ul>
+            {phone !== '' && <li><a href={telHref(co.phone)} className="footer-phone">{phone}</a></li>}
+            {email !== '' && <li>{hasPlaceholder(co.email) ? email : <a href={`mailto:${email}`}>{email}</a>}</li>}
+            <li>{ph(co.street)}{city !== '' && <><br />{city}</>}</li>
+            {hours !== '' && <li className="footer-pre">{hours}</li>}
+            {mapUrl !== '' && ph(co.map_link) !== '' && <li><a href={mapUrl} target="_blank" rel="noopener">{ph(co.map_link)}</a></li>}
+          </ul>
+        </div>
+
+        <nav className="footer-col" aria-label={ph(menu.footer_h_pages) || undefined}>
+          {ph(menu.footer_h_pages) !== '' && <p className="footer-h">{ph(menu.footer_h_pages)}</p>}
+          <ul>
+            {pages.map((p, i) => (
+              <li key={i}><a href={p.url} aria-current={navActive(p.url, path) ? 'page' : undefined}>{ph(p.label)}</a></li>
+            ))}
+          </ul>
+        </nav>
+
+        <div className="footer-col">
+          {ph(menu.footer_h_billing) !== '' && <p className="footer-h">{ph(menu.footer_h_billing)}</p>}
+          <ul>
+            {operator !== '' && <li>{ph(co.operator_label) !== '' && <span className="footer-label">{ph(co.operator_label)}</span>}{operator}{ph(co.operator_address) !== '' && <><br />{ph(co.operator_address)}</>}</li>}
+            {ph(co.ico) !== '' && <li>{ph(co.ico_label)} {ph(co.ico)}</li>}
+            {ph(co.dic) !== '' && <li>{ph(co.dic_label)} {ph(co.dic)}</li>}
+            {ph(co.register_note) !== '' && <li className="footer-note">{ph(co.register_note)}</li>}
+          </ul>
+        </div>
       </div>
-      {(legal.length > 0 || note !== '' || credit !== '') && (
-        <div className="footer-row footer-legal">
-          <span>{legal.join(' · ')}{note !== '' && <>{legal.length ? '. ' : ''}{note}</>}</span>
+
+      <div className="wrap"><div className="footer-bottom">
+        <span>© {new Date().getFullYear()} {ph(co.name)}{ph(menu.copyright) !== '' && <>. {ph(menu.copyright)}</>}</span>
+        <span className="footer-bottom-links">
+          {ph(menu.privacy_link) !== '' && <a href="/ochrana-osobnich-udaju">{ph(menu.privacy_link)}</a>}
           {credit !== '' && (
             <span>
               {ph(menu.credit_label)}{' '}
               {String(menu.credit_url ?? '').trim() !== '' ? <a href={menu.credit_url} target="_blank" rel="noopener">{credit}</a> : credit}
             </span>
           )}
-        </div>
-      )}
+        </span>
+      </div></div>
     </footer>
   )
 }
@@ -189,7 +227,7 @@ export function Shell({ c, pageKey, path, seo, noindex = false, children }: {
       {c.isPreview && <div className="preview-bar" role="status">Náhled neuloženého obsahu. Změny se uloží až v administraci tlačítkem Uložit.</div>}
       <Header c={c} path={path} pageKey={pageKey} />
       <main id="obsah" tabIndex={-1}>{children}</main>
-      <Footer c={c} />
+      <Footer c={c} path={path} />
       {display.cookie_bar && c.ph(display.cookie_text) !== '' && (
         <div className="cookie-bar" role="region" aria-label="Cookies" data-cookie-bar hidden>
           <p>

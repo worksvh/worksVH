@@ -101,7 +101,7 @@ async function loadSnapshot(): Promise<Snapshot> {
 }
 
 /** Celý obsah webu jedním načtením; po uložení v adminu se zneplatní značkou „content“. */
-export const getSnapshot = unstable_cache(loadSnapshot, ['content-v1'], { tags: ['content'], revalidate: 3600 })
+export const getSnapshot = unstable_cache(loadSnapshot, ['content-v2'], { tags: ['content'], revalidate: 3600 })
 
 const parse = (s: string | undefined | null): unknown => {
   if (!s) return null

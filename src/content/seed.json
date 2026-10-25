@@ -57,8 +57,8 @@
                 "button": ""
             },
             "seo": {
-                "title": "VH Works – nástrojárna v Úvalech u Prahy",
-                "description": "Přípravky, nástroje a CNC obráběné díly pro firmy. Konstrukce v SolidWorks, výroba a montáž v Úvalech u Prahy. Praxe od roku 1990.",
+                "title": "VH Works – nástrojárna u Prahy: přípravky, CNC díly, stroje",
+                "description": "Rodinná nástrojárna v Úvalech u Prahy. Konstrukce v SolidWorks, CNC obrábění, přípravky, jednoúčelové stroje a opravy na výrobních linkách. Praxe od roku 1990.",
                 "image": {
                     "media": null,
                     "alt": ""
@@ -81,8 +81,8 @@
                 "button": ""
             },
             "seo": {
-                "title": "Služby – konstrukce, CNC, přípravky, jednoúčelové stroje",
-                "description": "Konstrukce a dokumentace, přesné díly na CNC, přípravky, jednoúčelové stroje, sestavy, chapadla pro roboty, 3D tisk a opravy na linkách.",
+                "title": "Konstrukce, CNC obrábění, přípravky a stroje",
+                "description": "Konstrukce a výkresy, přesné díly z CNC, přípravky pro výrobu a měření, jednoúčelové stroje, chapadla pro roboty, 3D tisk a opravy na výrobních linkách.",
                 "image": {
                     "media": null,
                     "alt": ""
@@ -112,8 +112,8 @@
                 "button": ""
             },
             "seo": {
-                "title": "Práce – přípravky, CNC díly a opravy",
-                "description": "Ukázky přípravků, obráběných dílů, prototypů a oprav nástrojů z dílny VH Works v Úvalech.",
+                "title": "Ukázky zakázek: přípravky, CNC díly a opravy",
+                "description": "Výběr zakázek z dílny VH Works v Úvalech: přípravky pro výrobu a měření, obráběné díly z oceli a hliníku, prototypy a opravy nástrojů pro firmy.",
                 "image": {
                     "media": null,
                     "alt": ""
@@ -168,8 +168,8 @@
                 "button": "Domluvit návštěvu"
             },
             "seo": {
-                "title": "Dílna a strojní park v Úvalech",
-                "description": "Nástrojárna s praxí od roku 1990 a týmem sedmi lidí. Strojní park, lidé a adresa dílny v Úvalech u Prahy.",
+                "title": "Dílna a strojní park – nástrojárna Úvaly",
+                "description": "Nástrojárna s praxí od roku 1990: dílna 160 m² a vlastní konstrukce pod jednou střechou, strojní park a tým sedmi lidí. Pražská 1473, Úvaly u Prahy.",
                 "image": {
                     "media": null,
                     "alt": ""
@@ -207,8 +207,8 @@
                 "error_summary": "Poptávku se nepodařilo odeslat. Opravte prosím označená pole."
             },
             "seo": {
-                "title": "Kontakt a poptávka",
-                "description": "Pošlete výkres, model nebo fotku náčrtu. Ozveme se s cenou a termínem. Tel. +420 606 879 112, Pražská 1473, Úvaly.",
+                "title": "Kontakt a poptávka – nástrojárna Úvaly",
+                "description": "Pošlete výkres, 3D model nebo fotku náčrtu a ozveme se s cenou a termínem. Telefon +420 606 879 112, dílna Pražská 1473, Úvaly u Prahy.",
                 "image": {
                     "media": null,
                     "alt": ""
@@ -240,7 +240,7 @@
             },
             "seo": {
                 "title": "Ochrana osobních údajů",
-                "description": "",
+                "description": "Jak VH Works zpracovává osobní údaje z poptávkového formuláře a e-mailu, jak dlouho je uchovává a jaká práva k nim máte.",
                 "image": {
                     "media": null,
                     "alt": ""
@@ -306,6 +306,11 @@
             "aria": "Hlavní menu",
             "button": "Poptávka",
             "button_url": "/kontakt",
+            "footer_text": "Rodinná nástrojárna v Úvalech u Prahy. Konstrukce, CNC obrábění, přípravky a jednoúčelové stroje pro firmy od roku 1990.",
+            "footer_h_contact": "Kontakt",
+            "footer_h_pages": "Stránky",
+            "footer_h_billing": "Fakturační údaje",
+            "copyright": "Všechna práva vyhrazena.",
             "privacy_link": "Ochrana osobních údajů",
             "credit_label": "Web vytvořil",
             "credit_name": "Weblyx",
